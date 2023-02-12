@@ -3,8 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from src.db import get_db
-from src import schema as user_schema
-from src import api
+from src.schemas import user as user_schema
+from src.apis import user as user_api
 
 router = APIRouter()
 
@@ -16,12 +16,12 @@ def server_status():
 
 @router.get("/users", response_model=List[user_schema.User])
 def get_all_users(db: Session = Depends(get_db)):
-    return api.get_all_users(db)
+    return user_api.get_all_users(db)
 
 
 @router.get("/users/{user_id}", response_model=user_schema.User)
 def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
-    result = api.get_user_by_id(db, user_id)
+    result = user_api.get_user_by_id(db, user_id)
     if not result:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -34,4 +34,4 @@ def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
 def create_user(
     user_body: user_schema.UserCreate, db: Session = Depends(get_db)
 ):
-    return api.create_user(db, user_body)
+    return user_api.create_user(db, user_body)
