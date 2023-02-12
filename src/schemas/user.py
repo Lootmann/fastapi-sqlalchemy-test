@@ -1,4 +1,7 @@
+from typing import List
 from pydantic import BaseModel
+
+from src.schemas.post import Post
 
 
 class UserBase(BaseModel):
@@ -18,7 +21,7 @@ class UserCreateResponse(UserCreate):
 
 class User(UserBase):
     id: int
+    posts: List[Post] = []
 
     class Config:
         orm_mode = True
-

@@ -14,18 +14,23 @@ def test_create(client):
 
 
 def test_get_all_users(client):
-    user1 = client.post("/users", json={"name": "hoge"})
-    user2 = client.post("/users", json={"name": "hage"})
-    user3 = client.post("/users", json={"name": "hige"})
+    data = [
+        {"id": 1, "name": "hoge", "posts": []},
+        {"id": 2, "name": "hage", "posts": []},
+        {"id": 3, "name": "hige", "posts": []},
+    ]
+    client.post("/users", json=data[0])
+    client.post("/users", json=data[1])
+    client.post("/users", json=data[2])
 
     resp = client.get("/users")
     assert resp.status_code == status.HTTP_200_OK
 
     obj = resp.json()
     assert len(obj) == 3
-    assert user1.json() in obj
-    assert user2.json() in obj
-    assert user3.json() in obj
+    assert data[0] in obj
+    assert data[1] in obj
+    assert data[2] in obj
     assert {"name": "moge", "id": 123} not in obj
 
 

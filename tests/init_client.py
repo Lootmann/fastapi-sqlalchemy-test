@@ -14,7 +14,7 @@ TEST_DATABASE_URL = "sqlite:///:memory:"
 def test_client() -> TestClient:
     engine = create_engine(
         TEST_DATABASE_URL,
-        echo=True,
+        echo=False,
         connect_args={"check_same_thread": False},
     )
 
