@@ -7,11 +7,11 @@ from src.models.user import Base
 from src.db import get_db
 from src.main import app
 
-TEST_DATABASE_URL = "sqlite:///./test.db"
+TEST_DATABASE_URL = "sqlite:///:memory:"
 
 
 @pytest.fixture
-def test_client():
+def test_client() -> TestClient:
     engine = create_engine(
         TEST_DATABASE_URL,
         echo=True,
@@ -27,13 +27,12 @@ def test_client():
     def override_get_db():
         try:
             db = TestSession()
+            Base.metadata.create_all(bind=engine)
             yield db
         finally:
             db.close()
 
     app.dependency_overrides[get_db] = override_get_db
 
-    with TestClient(app, base_url="http://test") as client:
-        Base.metadata.create_all(bind=engine)
+    with TestClient(app=app, base_url="http://test") as client:
         yield client
-        Base.metadata.drop_all(bind=engine)
