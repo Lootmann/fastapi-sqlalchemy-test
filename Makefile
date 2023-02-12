@@ -7,7 +7,7 @@ test:
 
 .PHONY: migrate
 migrate:
-	python3 -m src.migrate_db
+	PYTHONDONTWRITEBYTECODE=1 python3 -m src.migrate_db
 
 .PHONY: req
 req:
