@@ -1,6 +1,7 @@
-from sqlalchemy.orm import Mapped, mapped_column, declarative_base
+from typing import List
 
-Base = declarative_base()
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from src.db import Base
 
 
 class User(Base):
@@ -8,3 +9,7 @@ class User(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
+    posts: Mapped[List["Post"]] = relationship("Post", back_populates="user")
+
+
+from src.models.post import Post
