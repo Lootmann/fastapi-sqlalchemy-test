@@ -2,14 +2,17 @@ from typing import List
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.db import Base
+from src.models.post import Post
 
 
 class User(Base):
+    """
+    User : Post = 1 : n  - A User has Many posts
+    so, `posts` relation which has backref, not backpopulates might be OK
+    """
+
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
-    posts: Mapped[List["Post"]] = relationship("Post", back_populates="user")
-
-
-from src.models.post import Post
+    posts: Mapped[List["Post"] | None] = relationship("Post", backref="user")

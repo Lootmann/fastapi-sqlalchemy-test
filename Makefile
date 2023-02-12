@@ -3,7 +3,11 @@ run:
 
 .PHONY: test
 test:
-	PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -v
+	PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -svv
+
+.PHONY: cov
+cov:
+	PYTHONDONTWRITEBYTECODE=1 python3 -m pytest --cov --cov-report=html
 
 .PHONY: migrate
 migrate:

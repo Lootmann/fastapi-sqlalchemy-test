@@ -12,7 +12,4 @@ class Post(Base):
 
     # ForeignKey
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    user: Mapped["User"] = relationship(back_populates="posts")
-
-
-from src.models.user import User
+    # user: Mapped["User"] = relationship("User", back_populates="posts")
