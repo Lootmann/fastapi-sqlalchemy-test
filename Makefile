@@ -3,7 +3,7 @@ run:
 
 .PHONY: test
 test:
-	PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -svv
+	PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -v
 
 .PHONY: migrate
 migrate:

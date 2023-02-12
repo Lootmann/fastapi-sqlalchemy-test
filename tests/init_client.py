@@ -24,17 +24,16 @@ def test_client():
         bind=engine,
     )
 
-    Base.metadata.create_all(bind=engine)
-
     def override_get_db():
         try:
             db = TestSession()
             yield db
         finally:
             db.close()
-            Base.metadata.drop_all(bind=engine)
 
     app.dependency_overrides[get_db] = override_get_db
 
     with TestClient(app, base_url="http://test") as client:
+        Base.metadata.create_all(bind=engine)
         yield client
+        Base.metadata.drop_all(bind=engine)
