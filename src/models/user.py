@@ -15,7 +15,7 @@ class User(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
-    posts: Mapped[List["Post"] | None] = relationship("Post", backref="user")
+    posts: Mapped[List["Post"]] = relationship("Post", backref="user")
 
     def __repr__(self) -> str:
-        return f"<User {self.id}, {self.name}>"
+        return f"<User (id, name, posts) {self.id},{self.name},{self.posts}>"

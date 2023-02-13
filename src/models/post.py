@@ -15,4 +15,4 @@ class Post(Base):
     # user: Mapped["User"] = relationship("User", back_populates="posts")
 
     def __repr__(self) -> str:
-        return f"<Post {self.id}, {self.title}, {self.content}, (user_id:{self.user_id})>"
+        return f"<Post (id, title, content, user_id) = {self.id},{self.title},{self.content},{self.user_id})>"
