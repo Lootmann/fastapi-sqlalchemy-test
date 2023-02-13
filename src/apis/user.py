@@ -12,9 +12,7 @@ def get_all_users(db: Session) -> List[user_schema.User]:
 
 def get_user_by_id(db: Session, user_id: int) -> user_model.User | None:
     return (
-        db.query(user_model.User.id, user_model.User.name)
-        .filter(user_model.User.id == user_id)
-        .first()
+        db.query(user_model.User).filter(user_model.User.id == user_id).first()
     )
 
 

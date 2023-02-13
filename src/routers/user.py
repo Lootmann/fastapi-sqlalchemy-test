@@ -69,7 +69,9 @@ def get_post_by_user(user_id: int, post_id: int, db: Session = Depends(get_db)):
     return post
 
 
-@router.post("/users/{user_id}/posts")
+@router.post(
+    "/users/{user_id}/posts", response_model=post_schema.PostCreateResponse
+)
 def create_post(
     user_id: int,
     post_body: post_schema.PostCreate,
