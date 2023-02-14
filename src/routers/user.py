@@ -28,7 +28,7 @@ def update_user(user_id: int, user_body: user_schema.UserCreate, db: Session = D
 
 
 @router.get("/users/{user_id}")
-def get_post_by_id(user_id: int, db: Session = Depends(get_db)):
+def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
     return {"router users": f"GET /users/{user_id}"}
 
 
