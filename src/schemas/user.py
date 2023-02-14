@@ -1,7 +1,8 @@
 from typing import List
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from src.schemas.post import Post
+from src.schemas.comment import Comment
 
 
 class UserBase(BaseModel):
@@ -21,7 +22,8 @@ class UserCreateResponse(UserCreate):
 
 class User(UserBase):
     id: int
-    posts: List[Post] = []
+    posts: List[Post] = Field([])
+    comments: List[Comment] = Field([])
 
     class Config:
         orm_mode = True
