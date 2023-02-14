@@ -27,8 +27,8 @@ REST な感じで
 - users
 
   - [x] `GET  /users`
-  - [x] `GET  /users/:id`
   - [x] `POST /users`
+  - [x] `GET  /users/:id`
   - [x] `PUT  /users/:id`
   - [x] `DEL  /users/:id`
   - [ ] `GET  /users/:id/posts`
@@ -38,14 +38,18 @@ REST な感じで
 
 - posts (Required: user_id)
 
-  - [ ] `GET  /posts`
-  - [ ] `GET  /posts/:id`
+  - [x] `GET  /posts`
+  - [x] `POST /posts`
+  - [x] `GET  /posts/:id`
+  - [ ] `PUT  /posts/:id`
+  - [ ] `DEL  /posts/:id`
   - [ ] `GET  /posts/:id/comments`
   - [ ] `GET  /posts/:id/comments/:id`
-  - [ ] `POST /posts`
 
 - comments (Required: user_id, and post_id)
 
   - [ ] `GET  /comments`
-  - [ ] `GET  /comments/:id`
   - [ ] `POST /comments`
+  - [ ] `GET  /comments/:id`
+  - [ ] `PUT  /comments/:id`
+  - [ ] `DEL  /comments/:id`
