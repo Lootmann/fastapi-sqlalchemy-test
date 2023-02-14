@@ -2,34 +2,43 @@
 
 Relation のテスト
 
-## Model
+## Relation
 
-```python
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from src.db import Base
-
-class User(Base):
-    __tablename__ = "users"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str]
-    posts: Mapped[List["Post"]] = relationship("Post", backref="user")
-
-    def __repr__(self) -> str:
-        return f"<User (id, name, posts) {self.id},{self.name},{self.posts}>"
+```
+- User
+    - Post
+        - Comment
+        - Comment
+    - Post
+        - Comment
+        - Comment
+        - Comment
 ```
 
-```python
-class Post(Base):
-    __tablename__ = "posts"
+## URL
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str]
-    content: Mapped[str]
+REST な感じで
 
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+- users
 
-    def __repr__(self) -> str:
-        return f"<Post (id, title, content, user_id) = {self.id},{self.title},{self.content},{self.user_id})>"
-```
+  - [ ] `GET  /users`
+  - [ ] `GET  /users/:id`
+  - [ ] `POST /users`
+  - [ ] `GET  /users/:id/posts`
+  - [ ] `GET  /users/:id/posts/:id`
+  - [ ] `GET  /users/:id/comments`
+  - [ ] `GET  /users/:id/comments/:id`
+
+- posts (Required: user_id)
+
+  - [ ] `GET  /posts`
+  - [ ] `GET  /posts/:id`
+  - [ ] `GET  /posts/:id/comments`
+  - [ ] `GET  /posts/:id/comments/:id`
+  - [ ] `POST /posts`
+
+- comments (Required: user_id, and post_id)
+
+  - [ ] `GET  /comments`
+  - [ ] `GET  /comments/:id`
+  - [ ] `POST /comments`
