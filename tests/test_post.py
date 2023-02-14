@@ -2,6 +2,7 @@ from fastapi import status
 from tests.init_client import test_client as client
 from src.schemas import post as post_schema
 from src.schemas import user as user_schema
+from tests.util import random_string
 
 
 class TestCreatePost:
@@ -49,6 +50,37 @@ class TestCreatePost:
 
 
 class TestGetPost:
+    def test_get_all_posts(self, client):
+        # get all posts when posts does NOT exist
+        resp = client.get("/posts")
+        post_obj = resp.json()
+        assert len(post_obj) == 0
+
+        # create user
+        user1 = client.post("/users", json={"name": "hoge"})
+        user2 = client.post("/users", json={"name": "hage"})
+        user3 = client.post("/users", json={"name": "hige"})
+
+        users = [
+            user_schema.User(**user1.json()),
+            user_schema.User(**user2.json()),
+            user_schema.User(**user3.json()),
+        ]
+
+        # create posts
+        for _ in range(10):
+            for user in users:
+                post_info = {
+                    "title": random_string(),
+                    "content": random_string(),
+                }
+                client.post(f"/users/{user.id}/posts", json=post_info)
+
+        # get all posts
+        resp = client.get("/posts")
+        post_obj = resp.json()
+        assert len(post_obj) == 30
+
     def test_get_no_posts(self, client):
         # create user
         resp = client.post("/users", json={"name": "hige"})
@@ -99,7 +131,7 @@ class TestGetPost:
         post_json = resp.json()
 
         # get post by post_id
-        resp = client.get(f"/users/{user.id}/posts/{post_json['id']}")
+        resp = client.get(f"/posts/{post_json['id']}")
         assert resp.status_code == status.HTTP_200_OK
 
         post_obj = post_schema.Post(**resp.json())
