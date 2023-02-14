@@ -35,3 +35,9 @@ def update_user(
     db.refresh(updated)
 
     return updated
+
+
+def delete_user(db: Session, user: user_model.User) -> None:
+    db.delete(user)
+    db.commit()
+    return

@@ -27,6 +27,14 @@ def update_user(user_id: int, user_body: user_schema.UserCreate, db: Session = D
     return user_api.update_user(db, user, user_body)
 
 
+@router.delete("/users/{user_id}", response_model=None)
+def delete_user(user_id: int, db: Session = Depends(get_db)):
+    user = user_api.find_user_by_id(db, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail=f"User:{user_id} Not Found")
+    return user_api.delete_user(db, user)
+
+
 @router.get("/users/{user_id}")
 def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
     return {"router users": f"GET /users/{user_id}"}

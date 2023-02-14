@@ -30,7 +30,7 @@ def test_get_all_users(client):
     assert len(resp_obj) == 10
 
 
-class TestUpdate:
+class TestUpdateUser:
     def test_update_user(self, client):
         username = random_string()
         resp = client.post("/users", json={"name": username})
@@ -47,6 +47,28 @@ class TestUpdate:
         assert updated_user.name == "updated"
         assert updated_user.name != username
 
-    def test_update_user_which_doesnot_exists(self, client):
+    def test_update_user_which_doesnt_exists(self, client):
         resp = client.put(f"/users/1", json={"name": "updated"})
+        assert resp.status_code == status.HTTP_404_NOT_FOUND
+
+
+class TestDeleteUser:
+    def test_delete(self, client):
+        create_resp = client.post("/users", json={"name": random_string()})
+        assert create_resp.status_code == status.HTTP_200_OK
+
+        resp = client.get("/users")
+        assert resp.status_code == status.HTTP_200_OK
+        assert len(resp.json()) == 1
+
+        user = user_schema.User(**create_resp.json())
+        resp = client.delete(f"/users/{user.id}")
+        assert resp.status_code == status.HTTP_200_OK
+
+        resp = client.get("/users")
+        assert resp.status_code == status.HTTP_200_OK
+        assert len(resp.json()) == 0
+
+    def test_delete_which_user_doesnt_exist(self, client):
+        resp = client.delete("/users/1")
         assert resp.status_code == status.HTTP_404_NOT_FOUND
