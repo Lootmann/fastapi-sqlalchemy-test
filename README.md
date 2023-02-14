@@ -30,6 +30,7 @@ REST な感じで
   - [x] `GET  /users/:id`
   - [x] `POST /users`
   - [x] `PUT  /users/:id`
+  - [x] `DEL  /users/:id`
   - [ ] `GET  /users/:id/posts`
   - [ ] `GET  /users/:id/posts/:id`
   - [ ] `GET  /users/:id/comments`
