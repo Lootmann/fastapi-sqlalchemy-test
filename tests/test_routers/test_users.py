@@ -19,15 +19,34 @@ def test_create_user(client):
     assert user.name == username
 
 
-def test_get_all_users(client):
-    for _ in range(10):
-        client.post("/users", json={"name": random_string()})
+class TestGetUser:
+    def test_get_all_users(self, client):
+        for _ in range(10):
+            client.post("/users", json={"name": random_string()})
 
-    resp = client.get("/users")
-    assert resp.status_code == status.HTTP_200_OK
+        resp = client.get("/users")
+        assert resp.status_code == status.HTTP_200_OK
 
-    resp_obj = resp.json()
-    assert len(resp_obj) == 10
+        resp_obj = resp.json()
+        assert len(resp_obj) == 10
+
+    def test_get_user(self, client):
+        username = random_string()
+        resp = client.post("/users", json={"name": username})
+        assert resp.status_code == status.HTTP_200_OK
+
+        user_data = user_schema.User(**resp.json())
+        resp = client.get(f"/users/{user_data.id}")
+        assert resp.status_code == status.HTTP_200_OK
+
+        user = user_schema.User(**resp.json())
+        assert user.name == username
+        assert user.posts == []
+        assert user.comments == []
+
+    def test_get_user_which_doesnt_exist(self, client):
+        resp = client.get(f"/users/123")
+        assert resp.status_code == status.HTTP_404_NOT_FOUND
 
 
 class TestUpdateUser:
