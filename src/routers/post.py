@@ -1,27 +1,31 @@
-from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from src.db import get_db
-from src.schemas import post as post_schema
-from src.apis import post as post_api
 
 router = APIRouter()
 
 
-@router.get("/posts", response_model=List[post_schema.Post])
+@router.get("/posts")
 def get_all_posts(db: Session = Depends(get_db)):
-    # NOTE: but never place to use
-    return post_api.get_all_posts(db)
+    return {"router p osts": "GET /posts"}
 
 
-@router.get("/posts/{post_id}", response_model=post_schema.Post)
+@router.get("/posts/{post_id}")
 def get_post_by_id(post_id: int, db: Session = Depends(get_db)):
-    post = post_api.get_post_by_id(db, post_id)
-    if not post:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Post {post_id} not found",
-        )
+    return {"router posts": f"GET /posts/{post_id}"}
 
-    return post
+
+@router.get("/posts/{post_id}/comments")
+def get_comments_by_post(post_id: int, db: Session = Depends(get_db)):
+    return {"router posts": f"GET /posts/{post_id}"}
+
+
+@router.get("/posts/{post_id}/comments/{comment_id}")
+def get_comment_by_post(post_id: int, comment_id: int, db: Session = Depends(get_db)):
+    return {"router posts": f"GET /posts/{post_id}/comments/{comment_id}"}
+
+
+@router.post("/posts")
+def create_post(db: Session = Depends(get_db)):
+    return {"router posts": "POST /posts"}

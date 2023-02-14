@@ -19,11 +19,17 @@ Relation のテスト
 
 REST な感じで
 
+1. Router を設定
+2. API を設定
+3. 中身見ながら Schema をいじくる
+4. Test して
+
 - users
 
-  - [ ] `GET  /users`
-  - [ ] `GET  /users/:id`
-  - [ ] `POST /users`
+  - [x] `GET  /users`
+  - [x] `GET  /users/:id`
+  - [x] `POST /users`
+  - [x] `PUT  /users/:id`
   - [ ] `GET  /users/:id/posts`
   - [ ] `GET  /users/:id/posts/:id`
   - [ ] `GET  /users/:id/comments`
