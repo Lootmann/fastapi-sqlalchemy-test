@@ -99,7 +99,7 @@ class TestGetPost:
         post_json = resp.json()
 
         # get post by post_id
-        resp = client.get(f"/users/{user.id}/posts/{post_json['id']}")
+        resp = client.get(f"/posts/{post_json['id']}")
         assert resp.status_code == status.HTTP_200_OK
 
         post_obj = post_schema.Post(**resp.json())

@@ -33,9 +33,7 @@ def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/users", response_model=user_schema.UserCreateResponse)
-def create_user(
-    user_body: user_schema.UserCreate, db: Session = Depends(get_db)
-):
+def create_user(user_body: user_schema.UserCreate, db: Session = Depends(get_db)):
     return user_api.create_user(db, user_body)
 
 
@@ -50,28 +48,7 @@ def get_all_posts_by_user(user_id: int, db: Session = Depends(get_db)):
     return post_api.get_all_posts_by_user(db, user_id)
 
 
-@router.get("/users/{user_id}/posts/{post_id}", response_model=post_schema.Post)
-def get_post_by_user(user_id: int, post_id: int, db: Session = Depends(get_db)):
-    result = user_api.get_user_by_id(db, user_id)
-    if not result:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"User {user_id} not found",
-        )
-
-    post = post_api.get_post_by_post_id(db, post_id)
-    if post.user_id != user_id:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"User {user_id} not found",
-        )
-
-    return post
-
-
-@router.post(
-    "/users/{user_id}/posts", response_model=post_schema.PostCreateResponse
-)
+@router.post("/users/{user_id}/posts", response_model=post_schema.PostCreateResponse)
 def create_post(
     user_id: int,
     post_body: post_schema.PostCreate,
