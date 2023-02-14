@@ -18,3 +18,20 @@ def create_user(db: Session, user_body: user_schema.UserCreate) -> user_model.Us
     db.refresh(user)
 
     return user
+
+
+def find_user_by_id(db: Session, user_id: int) -> user_model.User | None:
+    return db.get(user_model.User, user_id)
+
+
+def update_user(
+    db: Session, updated: user_schema.User, user_body: user_schema.UserCreate
+) -> user_model.User:
+    user = user_model.User(**user_body.dict())
+    updated.name = user.name
+
+    db.add(updated)
+    db.commit()
+    db.refresh(updated)
+
+    return updated
