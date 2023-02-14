@@ -7,22 +7,19 @@ class PostBase(BaseModel):
     title: str = Field("")
     content: str = Field("")
 
-
-class PostCreate(PostBase):
-    pass
-
-
-class PostCreateResponse(PostCreate):
-    id: int
-
     class Config:
         orm_mode = True
+
+
+class PostCreate(PostBase):
+    user_id: int
+
+
+class PostCreateResponse(PostBase):
+    id: int
 
 
 class Post(PostBase):
     id: int
     user_id: int
     comments: List[Comment]
-
-    class Config:
-        orm_mode = True

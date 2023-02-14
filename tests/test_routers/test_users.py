@@ -59,7 +59,7 @@ class TestUpdateUser:
         assert resp_obj["name"] == username
 
         resp = client.put(f"/users/{resp_obj['id']}", json={"name": "updated"})
-        assert resp.status_code == status.HTTP_200_OK
+        assert resp.status_code == status.HTTP_201_CREATED
 
         updated_user = user_schema.User(**resp.json())
         assert updated_user.id == resp_obj["id"]

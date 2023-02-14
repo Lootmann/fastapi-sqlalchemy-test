@@ -17,12 +17,12 @@ def get_post_by_id(db: Session, post_id: int) -> post_schema.Post:
     return db.query(post_model.Post).where(post_model.Post.id == post_id).first()
 
 
-def create_post(db: Session, user_id: int, post_body: post_schema.PostCreate) -> post_model.Post:
-    user: user_model.User = db.query(user_model.User).filter(user_model.User.id == user_id).first()
-
+def create_post(
+    db: Session, user: user_model.User, post_body: post_schema.PostCreate
+) -> post_model.Post:
     post: post_model.Post = post_model.Post(**post_body.dict())
-
     user.posts.append(post)
+
     db.add(user)
     db.commit()
     db.refresh(user)
