@@ -29,3 +29,13 @@ def get_comment_by_post(post_id: int, comment_id: int, db: Session = Depends(get
 @router.post("/posts")
 def create_post(db: Session = Depends(get_db)):
     return {"router posts": "POST /posts"}
+
+
+@router.put("/posts/{post_id}")
+def update_post(post_id: int, db: Session = Depends(get_db)):
+    return {}
+
+
+@router.delete("/posts/{post_id}")
+def delete_post(post_id: int, db: Session = Depends(get_db)):
+    return {}
