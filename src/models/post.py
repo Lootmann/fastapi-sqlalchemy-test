@@ -14,7 +14,7 @@ class Post(Base):
 
     # ForeignKey
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    posts: Mapped[List["Comment"]] = relationship("Comment", backref="post")
+    comments: Mapped[List["Comment"]] = relationship("Comment", backref="post")
 
     def __repr__(self) -> str:
         return f"<Post (id, title, content, user_id) = {self.id},{self.title},{self.content},{self.user_id})>"
