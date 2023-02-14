@@ -1,6 +1,8 @@
+from typing import List
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.db import Base
+from src.models.comment import Comment
 
 
 class Post(Base):
@@ -12,7 +14,7 @@ class Post(Base):
 
     # ForeignKey
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    # user: Mapped["User"] = relationship("User", back_populates="posts")
+    posts: Mapped[List["Comment"]] = relationship("Comment", backref="post")
 
     def __repr__(self) -> str:
         return f"<Post (id, title, content, user_id) = {self.id},{self.title},{self.content},{self.user_id})>"
