@@ -1,3 +1,4 @@
+import pytest
 from fastapi import status
 from tests.init_client import test_client as client
 from src.schemas import user as user_schema
@@ -51,48 +52,79 @@ class TestGetUser:
 
 
 class TestGetPostByUser:
+    @pytest.fixture(autouse=True)
+    def initial(self, client):
+        self.username = random_string()
+        resp = client.post("/users", json={"name": self.username})
+        self.user = user_schema.UserCreateResponse(**resp.json())
+
     def test_get_all_posts_by_user_id(self, client):
-        username = random_string()
-        resp = client.post("/users", json={"name": username})
-        assert resp.status_code == status.HTTP_200_OK
-
-        user = user_schema.User(**resp.json())
-        assert len(user.posts) == 0
-
         # create post
-        post_data = {"title": random_string(), "content": random_string(), "user_id": user.id}
+        post_data = {"title": random_string(), "content": random_string(), "user_id": self.user.id}
         client.post("/posts", json=post_data)
         client.post("/posts", json=post_data)
         client.post("/posts", json=post_data)
 
         # get user, user has posts
-        resp = client.get(f"/users/{user.id}/posts")
+        resp = client.get(f"/users/{self.user.id}/posts")
         posts = resp.json()
         assert len(posts) == 3
 
         # this resp is same as above ...
-        resp = client.get(f"/users/{user.id}")
+        resp = client.get(f"/users/{self.user.id}")
         posts = resp.json()["posts"]
         assert len(posts) == 3
 
     def test_get_post_by_user_id_and_post_id(self, client):
-        resp = client.post("/users", json={"name": random_string()})
-        assert resp.status_code == status.HTTP_200_OK
-        user_id = resp.json()["id"]
-
-        post_data = {"title": random_string(), "content": random_string(), "user_id": user_id}
+        post_data = {"title": random_string(), "content": random_string(), "user_id": self.user.id}
         resp = client.post("/posts", json=post_data)
         post_id = resp.json()["id"]
 
-        resp = client.get(f"/users/{user_id}/posts/{post_id}")
+        resp = client.get(f"/users/{self.user.id}/posts/{post_id}")
         assert resp.status_code == status.HTTP_200_OK
 
         # wrong post_id
-        resp = client.get(f"/users/{user_id}/posts/{post_id + 1}")
+        resp = client.get(f"/users/{self.user.id}/posts/{post_id + 1}")
         assert resp.status_code == status.HTTP_404_NOT_FOUND
 
         # wrong user_id
-        resp = client.get(f"/users/{user_id + 1}/posts/{post_id}")
+        resp = client.get(f"/users/{self.user.id+ 1}/posts/{post_id}")
+        assert resp.status_code == status.HTTP_404_NOT_FOUND
+
+
+class TestGetCommentByUser:
+    @pytest.fixture(autouse=True)
+    def initial(self, client):
+        self.username = random_string()
+        resp = client.post("/users", json={"name": self.username})
+        self.user = user_schema.UserCreateResponse(**resp.json())
+
+    def test_get_comments_by_user_id(self, client):
+        resp = client.get(f"/users/{self.user.id}/comments")
+        assert resp.status_code == status.HTTP_200_OK
+
+        resp_obj = resp.json()
+        assert len(resp_obj) == 0
+
+        post_data = {"title": random_string(), "content": random_string(), "user_id": self.user.id}
+        resp = client.post("/posts", json=post_data)
+        post_id = resp.json()["id"]
+
+        comment_data = {"comment": random_string(), "user_id": self.user.id, "post_id": post_id}
+        client.post("/comments", json=comment_data)
+        comment_data = {"comment": random_string(), "user_id": self.user.id, "post_id": post_id}
+        client.post("/comments", json=comment_data)
+        comment_data = {"comment": random_string(), "user_id": self.user.id, "post_id": post_id}
+        client.post("/comments", json=comment_data)
+
+        resp = client.get(f"/users/{self.user.id}/comments")
+        assert resp.status_code == status.HTTP_200_OK
+
+        resp_obj = resp.json()
+        assert len(resp_obj) == 3
+
+    def tet_get_comments_which_doesnt_exist_user(self, client):
+        resp = client.get("/users/123/comments")
         assert resp.status_code == status.HTTP_404_NOT_FOUND
 
 
