@@ -17,4 +17,4 @@ class Comment(Base):
     post_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
 
     def __repr__(self) -> str:
-        return f"<Comment (id, comment user_id, post_id) {self.id}, {self.comment} {self.user_id}, {self.post_id}>"
+        return f"<Comment (id,comment,user_id,post_id) = ({self.id},{self.comment},{self.user_id},{self.post_id})>"
