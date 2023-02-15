@@ -1,8 +1,10 @@
 from typing import List
+
 from sqlalchemy.orm import Session
-from src.schemas import post as post_schema
+
 from src.models import post as post_model
 from src.models import user as user_model
+from src.schemas import post as post_schema
 
 
 def get_all_posts(db: Session) -> List[post_schema.Post]:

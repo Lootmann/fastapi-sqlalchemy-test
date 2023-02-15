@@ -2,8 +2,8 @@ from typing import List
 
 from sqlalchemy.orm import Session
 
-from src.schemas import user as user_schema
 from src.models import user as user_model
+from src.schemas import user as user_schema
 
 
 def get_all_users(db: Session) -> List[user_model.User]:

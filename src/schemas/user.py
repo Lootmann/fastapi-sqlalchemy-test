@@ -1,8 +1,9 @@
 from typing import List
+
 from pydantic import BaseModel, Field
 
-from src.schemas.post import Post
 from src.schemas.comment import Comment
+from src.schemas.post import Post
 
 
 class UserBase(BaseModel):
