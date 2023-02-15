@@ -50,9 +50,13 @@ def get_all_posts_by_user(user_id: int, db: Session = Depends(get_db)):
     return user_api.find_posts_by_user_id(db, user_id)
 
 
-@router.get("/users/{user_id}/posts/{post_id}")
+@router.get("/users/{user_id}/posts/{post_id}", response_model=post_schema.Post | None)
 def get_post_by_user(user_id: int, post_id: int, db: Session = Depends(get_db)):
-    return {}
+    # TODO: validation user
+    post = user_api.find_post_by_user_id(db, user_id, post_id)
+    if not post:
+        raise HTTPException(status_code=404, detail=f"Post:{post_id} Not Found")
+    return post
 
 
 @router.get("/users/{user_id}/comments")

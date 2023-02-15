@@ -75,6 +75,26 @@ class TestGetPostByUser:
         posts = resp.json()["posts"]
         assert len(posts) == 3
 
+    def test_get_post_by_user_id_and_post_id(self, client):
+        resp = client.post("/users", json={"name": random_string()})
+        assert resp.status_code == status.HTTP_200_OK
+        user_id = resp.json()["id"]
+
+        post_data = {"title": random_string(), "content": random_string(), "user_id": user_id}
+        resp = client.post("/posts", json=post_data)
+        post_id = resp.json()["id"]
+
+        resp = client.get(f"/users/{user_id}/posts/{post_id}")
+        assert resp.status_code == status.HTTP_200_OK
+
+        # wrong post_id
+        resp = client.get(f"/users/{user_id}/posts/{post_id + 1}")
+        assert resp.status_code == status.HTTP_404_NOT_FOUND
+
+        # wrong user_id
+        resp = client.get(f"/users/{user_id + 1}/posts/{post_id}")
+        assert resp.status_code == status.HTTP_404_NOT_FOUND
+
 
 class TestUpdateUser:
     def test_update_user(self, client):

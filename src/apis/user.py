@@ -31,6 +31,15 @@ def find_posts_by_user_id(db: Session, user_id: int) -> List[post_model.Post]:
     return db.query(post_model.Post).filter(post_model.Post.user_id == user_id).all()
 
 
+def find_post_by_user_id(db: Session, user_id: int, post_id) -> post_model.Post | None:
+    return (
+        db.query(post_model.Post)
+        .filter(post_model.Post.user_id == user_id)
+        .filter(post_model.Post.id == post_id)
+        .first()
+    )
+
+
 def update_user(
     db: Session, updated: user_schema.User, user_body: user_schema.UserCreate
 ) -> user_model.User:
