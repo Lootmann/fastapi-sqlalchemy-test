@@ -28,3 +28,16 @@ def create_post(
     db.refresh(user)
 
     return post
+
+
+def update_post(
+    db: Session, updated: post_model.Post, post_body: post_schema.PostCreate
+) -> post_model.Post:
+    updated.title = post_body.title
+    updated.content = post_body.content
+
+    db.add(updated)
+    db.commit()
+    db.refresh(updated)
+
+    return updated
