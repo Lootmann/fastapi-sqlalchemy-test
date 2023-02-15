@@ -156,3 +156,24 @@ class TestPatchPost:
         }
         resp = client.patch(f"/posts/{self.post.id}", json=attack_data)
         assert resp.status_code == status.HTTP_404_NOT_FOUND
+
+
+class TestDeletePost:
+    def test_delete_post(self, client):
+        resp = client.post("/users", json={"name": random_string()})
+        user = user_schema.User(**resp.json())
+
+        post_data = {"title": "deleted", "content": "hoge", "user_id": user.id}
+        resp = client.post("/posts", json=post_data)
+        assert resp.status_code == status.HTTP_201_CREATED
+
+        post_id = resp.json()["id"]
+
+        resp = client.get("/posts")
+        assert len(resp.json()) == 1
+
+        resp = client.delete(f"/posts/{post_id}")
+        assert resp.status_code == status.HTTP_204_NO_CONTENT
+
+        resp = client.get("/posts")
+        assert len(resp.json()) == 0
