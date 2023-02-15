@@ -17,4 +17,4 @@ class Post(Base):
     comments: Mapped[List["Comment"]] = relationship("Comment", backref="post")
 
     def __repr__(self) -> str:
-        return f"<Post (id, title, content, user_id) = {self.id},{self.title},{self.content},{self.user_id})>"
+        return f"<Post (id,title,content,user_id,comments) = ({self.id},{self.title},{self.content},{self.user_id},{self.comments})>"
