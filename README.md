@@ -38,13 +38,13 @@ REST な感じで
 
 - posts (Required: user_id)
 
-  - [x] `GET  /posts`
-  - [x] `POST /posts`
-  - [x] `GET  /posts/:id`
-  - [ ] `PUT  /posts/:id`
-  - [ ] `DEL  /posts/:id`
-  - [ ] `GET  /posts/:id/comments`
-  - [ ] `GET  /posts/:id/comments/:id`
+  - [x] `GET    /posts`
+  - [x] `POST   /posts`
+  - [x] `GET    /posts/:id`
+  - [x] `PATCH  /posts/:id`
+  - [x] `DEL    /posts/:id`
+  - [ ] `GET    /posts/:id/comments`
+  - [ ] `GET    /posts/:id/comments/:id`
 
 - comments (Required: user_id, and post_id)
 

@@ -13,7 +13,7 @@ def get_all_posts_by_user(db: Session, user_id: int) -> List[post_schema.Post]:
     return db.query(post_model.Post).where(post_model.Post.user_id == user_id).all()
 
 
-def get_post_by_id(db: Session, post_id: int) -> post_schema.Post:
+def find_post_by_id(db: Session, post_id: int) -> post_schema.Post:
     return db.get(post_model.Post, post_id)
 
 
@@ -28,3 +28,22 @@ def create_post(
     db.refresh(user)
 
     return post
+
+
+def update_post(
+    db: Session, updated: post_model.Post, post_body: post_schema.PostCreate
+) -> post_model.Post:
+    updated.title = post_body.title
+    updated.content = post_body.content
+
+    db.add(updated)
+    db.commit()
+    db.refresh(updated)
+
+    return updated
+
+
+def delete_post(db: Session, post: post_model.Post) -> None:
+    db.delete(post)
+    db.commit()
+    return
