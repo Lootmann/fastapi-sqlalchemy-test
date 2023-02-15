@@ -1,11 +1,12 @@
 from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
 from src.apis import post as post_api
 from src.apis import user as user_api
-from src.schemas import post as post_schema
 from src.db import get_db
+from src.schemas import post as post_schema
 
 router = APIRouter()
 

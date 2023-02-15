@@ -1,13 +1,13 @@
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, Response, status
 
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
+from src.apis import comment as comment_api
+from src.apis import post as post_api
+from src.db import get_db
 from src.models import comment as comment_model
 from src.schemas import comment as comment_schema
-from src.apis import comment as comment_api, post as post_api
-from src.db import get_db
-
 
 router = APIRouter()
 

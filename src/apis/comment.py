@@ -1,7 +1,10 @@
 from typing import List
+
 from sqlalchemy.orm import Session
+
+from src.models import comment as comment_model
+from src.models import post as post_model
 from src.schemas import comment as comment_schema
-from src.models import post as post_model, comment as comment_model
 
 
 def get_all_comments(db: Session) -> List[comment_model.Comment]:
