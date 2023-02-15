@@ -23,3 +23,21 @@ def create_comment(
     db.refresh(post)
 
     return comment
+
+
+def update_comment(
+    db: Session, updated: comment_model.Comment, comment_body: comment_schema.CommentCreate
+) -> comment_model.Comment:
+    updated.comment = comment_body.comment
+
+    db.add(updated)
+    db.commit()
+    db.refresh(updated)
+
+    return updated
+
+
+def delete_comment(db: Session, comment: comment_model.Comment) -> None:
+    db.delete(comment)
+    db.commit()
+    return

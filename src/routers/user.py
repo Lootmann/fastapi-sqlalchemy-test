@@ -45,19 +45,19 @@ def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
 
 @router.get("/users/{user_id}/posts")
 def get_all_posts_by_user(user_id: int, db: Session = Depends(get_db)):
-    return {"router users": f"GET /users/{user_id}/posts"}
+    return {}
 
 
 @router.get("/users/{user_id}/posts/{post_id}")
 def get_post_by_user(user_id: int, post_id: int, db: Session = Depends(get_db)):
-    return {"router users": f"GET /users/{user_id}/posts/{post_id}"}
+    return {}
 
 
 @router.get("/users/{user_id}/comments")
 def get_all_comments_by_user(user_id: int, db: Session = Depends(get_db)):
-    return {"router users": f"GET /users/{user_id}/comments"}
+    return {}
 
 
 @router.get("/users/{user_id}/comments/{comment_id}")
 def get_comment_by_user(user_id: int, comment_id: int, db: Session = Depends(get_db)):
-    return {"router users": f"GET /users/{user_id}/comments/{comment_id}"}
+    return {}

@@ -6,6 +6,23 @@ from src.schemas import user as user_schema
 from tests.util import random_string
 
 
+@pytest.fixture(autouse=True, scope="function")
+def initial(client):
+    """
+    create user and post and return these params
+    """
+    username = random_string()
+    resp = client.post("/users", json={"name": username})
+    resp_obj = resp.json()
+    user_id = resp_obj["id"]
+
+    return {
+        "username": username,
+        "user_id": user_id,
+        "user": resp_obj,
+    }
+
+
 class TestGetPost:
     def test_get_all_posts(self, client):
         resp = client.get("/posts")
@@ -14,11 +31,8 @@ class TestGetPost:
         resp_obj = resp.json()
         assert len(resp_obj) == 0
 
-    def test_get_one_post(self, client):
-        resp = client.post("/users", json={"name": "foobar"})
-        user = user_schema.User(**resp.json())
-
-        post_data = {"title": "new post", "content": "nah", "user_id": user.id}
+    def test_get_one_post(self, client, initial):
+        post_data = {"title": "new post", "content": "nah", "user_id": initial["user_id"]}
         resp = client.post("/posts", json=post_data)
         assert resp.status_code == status.HTTP_201_CREATED
 
@@ -32,11 +46,8 @@ class TestGetPost:
         assert post.content == post_resp.content
         assert post.comments == []
 
-    def test_get_one_post_raise_error(self, client):
-        resp = client.post("/users", json={"name": "foobar"})
-        user = user_schema.User(**resp.json())
-
-        post_data = {"title": "new post", "content": "nah", "user_id": user.id}
+    def test_get_one_post_raise_error(self, client, initial):
+        post_data = {"title": "new post", "content": "nah", "user_id": initial["user_id"]}
         resp = client.post("/posts", json=post_data)
         post = post_schema.PostCreateResponse(**resp.json())
 
@@ -50,42 +61,39 @@ class TestGetPost:
 
 
 class TestPostPost:
-    def test_create_post(self, client):
-        resp = client.post("/users", json={"name": "foobar"})
-        user = user_schema.User(**resp.json())
-        resp = client.post("/posts", json={"user_id": user.id, "title": "hoge", "content": "hage"})
+    def test_create_post(self, client, initial):
+        resp = client.post(
+            "/posts", json={"user_id": initial["user_id"], "title": "hoge", "content": "hage"}
+        )
         assert resp.status_code == status.HTTP_201_CREATED
 
         post = post_schema.PostCreateResponse(**resp.json())
         assert post.title == "hoge"
         assert post.content == "hage"
 
-        resp = client.get(f"/users/{user.id}")
+        resp = client.get(f"/users/{initial['user_id']}")
         user = user_schema.User(**resp.json())
         assert user.posts != []
 
         assert user.posts[0].title == post.title
         assert user.posts[0].content == post.content
 
-    def test_create_post_without_userid(self, client):
+    def test_create_post_without_userid(self, client, initial):
         resp = client.post("/posts", json={"title": "hoge", "content": "hage"})
         assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
-    def test_create_post_raise_user_not_found(self, client):
+    def test_create_post_raise_user_not_found(self, client, initial):
         resp = client.post("/posts", json={"user_id": 1234, "title": "hoge", "content": "hage"})
         assert resp.status_code == status.HTTP_404_NOT_FOUND
 
-    def test_create_post_without_field(self, client):
-        resp = client.post("/users", json={"name": "James Foo"})
-        user = user_schema.User(**resp.json())
-
-        resp = client.post("/posts", json={"user_id": user.id, "title": "hoge"})
+    def test_create_post_without_field(self, client, initial):
+        resp = client.post("/posts", json={"user_id": initial["user_id"], "title": "hoge"})
         assert resp.status_code == status.HTTP_201_CREATED
 
-        resp = client.post("/posts", json={"user_id": user.id, "content": "hoge"})
+        resp = client.post("/posts", json={"user_id": initial["user_id"], "content": "hoge"})
         assert resp.status_code == status.HTTP_201_CREATED
 
-        resp = client.post("/posts", json={"user_id": user.id})
+        resp = client.post("/posts", json={"user_id": initial["user_id"]})
         assert resp.status_code == status.HTTP_201_CREATED
 
         resp = client.get("/posts")
@@ -159,11 +167,8 @@ class TestPatchPost:
 
 
 class TestDeletePost:
-    def test_delete_post(self, client):
-        resp = client.post("/users", json={"name": random_string()})
-        user = user_schema.User(**resp.json())
-
-        post_data = {"title": "deleted", "content": "hoge", "user_id": user.id}
+    def test_delete_post(self, client, initial):
+        post_data = {"title": "deleted", "content": "hoge", "user_id": initial["user_id"]}
         resp = client.post("/posts", json=post_data)
         assert resp.status_code == status.HTTP_201_CREATED
 
@@ -177,3 +182,12 @@ class TestDeletePost:
 
         resp = client.get("/posts")
         assert len(resp.json()) == 0
+
+    def test_delete_post_which_wrong_post_id(self, client, initial):
+        post_data = {"title": "deleted", "content": "hoge", "user_id": initial["user_id"]}
+        resp = client.post("/posts", json=post_data)
+        assert resp.status_code == status.HTTP_201_CREATED
+
+        post_id = resp.json()["id"]
+        resp = client.delete(f"/posts/{post_id + 10}")
+        assert resp.status_code == status.HTTP_404_NOT_FOUND
