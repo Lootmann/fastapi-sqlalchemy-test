@@ -1,6 +1,7 @@
 from fastapi import status
 from tests.init_client import test_client as client
 from src.schemas import user as user_schema
+from src.schemas import post as post_schema
 from tests.util import random_string
 
 
@@ -47,6 +48,32 @@ class TestGetUser:
     def test_get_user_which_doesnt_exist(self, client):
         resp = client.get(f"/users/123")
         assert resp.status_code == status.HTTP_404_NOT_FOUND
+
+
+class TestGetPostByUser:
+    def test_get_all_posts_by_user_id(self, client):
+        username = random_string()
+        resp = client.post("/users", json={"name": username})
+        assert resp.status_code == status.HTTP_200_OK
+
+        user = user_schema.User(**resp.json())
+        assert len(user.posts) == 0
+
+        # create post
+        post_data = {"title": random_string(), "content": random_string(), "user_id": user.id}
+        client.post("/posts", json=post_data)
+        client.post("/posts", json=post_data)
+        client.post("/posts", json=post_data)
+
+        # get user, user has posts
+        resp = client.get(f"/users/{user.id}/posts")
+        posts = resp.json()
+        assert len(posts) == 3
+
+        # this resp is same as above ...
+        resp = client.get(f"/users/{user.id}")
+        posts = resp.json()["posts"]
+        assert len(posts) == 3
 
 
 class TestUpdateUser:

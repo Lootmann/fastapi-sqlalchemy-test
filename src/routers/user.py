@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from src.apis import user as user_api
 from src.db import get_db
 from src.schemas import user as user_schema
+from src.schemas import post as post_schema
 
 router = APIRouter()
 
@@ -44,9 +45,9 @@ def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
     return user
 
 
-@router.get("/users/{user_id}/posts")
+@router.get("/users/{user_id}/posts", response_model=List[post_schema.Post])
 def get_all_posts_by_user(user_id: int, db: Session = Depends(get_db)):
-    return {}
+    return user_api.find_posts_by_user_id(db, user_id)
 
 
 @router.get("/users/{user_id}/posts/{post_id}")
