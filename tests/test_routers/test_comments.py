@@ -84,6 +84,68 @@ class TestPostComment:
         assert created_comment["user_id"] == post.comments[0].user_id
         assert created_comment["post_id"] == post.comments[0].post_id
 
+    def test_create_post_which_wrong_comment_id(self, client, initial):
+        # create comment
+        comment_data = {
+            "comment": "this is a comment",
+            "user_id": initial["user_id"],
+            "post_id": initial["post_id"] + 1,
+        }
+        resp = client.post("/comments", json=comment_data)
+        assert resp.status_code == status.HTTP_404_NOT_FOUND
+
+
+class TestUpdateComment:
+    def test_udpate_comment(self, client, initial):
+        comment_data = {
+            "comment": "old comment",
+            "user_id": initial["user_id"],
+            "post_id": initial["post_id"],
+        }
+        resp = client.post("/comments", json=comment_data)
+        assert resp.status_code == status.HTTP_201_CREATED
+
+        comment_id = resp.json()["id"]
+
+        resp = client.get(f"/comments/{comment_id}")
+        comment_json = resp.json()
+        assert comment_json["comment"] == "old comment"
+
+        # update
+        new_comment_data = {
+            "comment": "updated :^)",
+            "user_id": initial["user_id"],
+            "post_id": initial["post_id"],
+        }
+        resp = client.patch(f"/comments/{comment_id}", json=new_comment_data)
+        assert resp.status_code == status.HTTP_200_OK
+
+    def test_update_comment_which_take_wrong_post_id(self, client, initial):
+        comment_data = {
+            "comment": "old comment",
+            "user_id": initial["user_id"],
+            "post_id": initial["post_id"],
+        }
+        resp = client.post("/comments", json=comment_data)
+        assert resp.status_code == status.HTTP_201_CREATED
+
+        comment_id = resp.json()["id"]
+        comment_data["post_id"] += 12
+        resp = client.patch(f"/comments/{comment_id}", json=comment_data)
+        assert resp.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_update_comment_which_has_wrong_comment_id(self, client, initial):
+        comment_data = {
+            "comment": "old comment",
+            "user_id": initial["user_id"],
+            "post_id": initial["post_id"],
+        }
+        resp = client.post("/comments", json=comment_data)
+        assert resp.status_code == status.HTTP_201_CREATED
+
+        resp = client.patch("/comments/123", json=comment_data)
+        assert resp.status_code == status.HTTP_404_NOT_FOUND
+
 
 class TestDeleteComment:
     def test_delete_comment(self, client, initial):
@@ -108,3 +170,17 @@ class TestDeleteComment:
 
         resp = client.get("/comments")
         assert len(resp.json()) == 0
+
+    def test_delete_comment_which_wrong_comment_id(self, client, initial):
+        # create comment
+        comment_data = {
+            "comment": "this is a comment",
+            "user_id": initial["user_id"],
+            "post_id": initial["post_id"],
+        }
+        resp = client.post("/comments", json=comment_data)
+        assert resp.status_code == status.HTTP_201_CREATED
+
+        comment_id = resp.json()["id"]
+        resp = client.delete(f"/comments/{comment_id + 1}")
+        assert resp.status_code == status.HTTP_404_NOT_FOUND

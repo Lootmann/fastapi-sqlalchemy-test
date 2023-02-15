@@ -48,8 +48,8 @@ REST な感じで
 
 - comments (Required: user_id, and post_id)
 
-  - [ ] `GET  /comments`
-  - [ ] `POST /comments`
-  - [ ] `GET  /comments/:id`
-  - [ ] `PUT  /comments/:id`
-  - [ ] `DEL  /comments/:id`
+  - [x] `GET  /comments`
+  - [x] `POST /comments`
+  - [x] `GET  /comments/:id`
+  - [x] `PUT  /comments/:id`
+  - [x] `DEL  /comments/:id`
