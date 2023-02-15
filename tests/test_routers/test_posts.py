@@ -12,6 +12,40 @@ class TestGetPost:
         resp_obj = resp.json()
         assert len(resp_obj) == 0
 
+    def test_get_one_post(self, client):
+        resp = client.post("/users", json={"name": "foobar"})
+        user = user_schema.User(**resp.json())
+
+        post_data = {"title": "new post", "content": "nah", "user_id": user.id}
+        resp = client.post("/posts", json=post_data)
+        assert resp.status_code == status.HTTP_201_CREATED
+
+        post_resp = post_schema.PostCreateResponse(**resp.json())
+        resp = client.get(f"/posts/{post_resp.id}")
+        assert resp.status_code == status.HTTP_200_OK
+
+        post = post_schema.Post(**resp.json())
+        assert post.id == post_resp.id
+        assert post.title == post_resp.title
+        assert post.content == post_resp.content
+        assert post.comments == []
+
+    def test_get_one_post_raise_error(self, client):
+        resp = client.post("/users", json={"name": "foobar"})
+        user = user_schema.User(**resp.json())
+
+        post_data = {"title": "new post", "content": "nah", "user_id": user.id}
+        resp = client.post("/posts", json=post_data)
+        post = post_schema.PostCreateResponse(**resp.json())
+
+        # does not exit post id
+        resp = client.get(f"/posts/{post.id + 1}")
+        assert resp.status_code == status.HTTP_404_NOT_FOUND
+
+        # wrong post id type
+        resp = client.get(f"/posts/hoge")
+        assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
 
 class TestPostPost:
     def test_create_post(self, client):

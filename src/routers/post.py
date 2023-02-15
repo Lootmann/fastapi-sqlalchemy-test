@@ -15,9 +15,12 @@ def get_all_posts(db: Session = Depends(get_db)):
     return post_api.get_all_posts(db)
 
 
-@router.get("/posts/{post_id}")
+@router.get("/posts/{post_id}", response_model=post_schema.Post)
 def get_post_by_id(post_id: int, db: Session = Depends(get_db)):
-    return {}
+    post = post_api.get_post_by_id(db, post_id)
+    if not post:
+        raise HTTPException(status_code=404, detail=f"Post:{post_id} Not Found")
+    return post
 
 
 @router.get("/posts/{post_id}/comments")
