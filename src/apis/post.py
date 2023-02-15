@@ -14,7 +14,7 @@ def get_all_posts_by_user(db: Session, user_id: int) -> List[post_schema.Post]:
 
 
 def get_post_by_id(db: Session, post_id: int) -> post_schema.Post:
-    return db.query(post_model.Post).where(post_model.Post.id == post_id).first()
+    return db.get(post_model.Post, post_id)
 
 
 def create_post(
