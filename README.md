@@ -43,8 +43,8 @@ REST な感じで
   - [x] `GET    /posts/:id`
   - [x] `PATCH  /posts/:id`
   - [x] `DEL    /posts/:id`
-  - [ ] `GET    /posts/:id/comments`
-  - [ ] `GET    /posts/:id/comments/:id`
+  - [x] `GET    /posts/:id/comments`
+  - ~~[x] `GET    /posts/:id/comments/:id`~`
 
 - comments (Required: user_id, and post_id)
 
@@ -56,6 +56,8 @@ REST な感じで
 
 ## Thinking 🤔
 
+### API1
+
 ```
 GET  /users/:id/posts
 GET  /users/:id/posts/:id
@@ -66,3 +68,11 @@ GET  /users/:id/comments/:id
 when I get the response of /user/:id,
 I can get all posts and comments, so I wonder if this is really necessary.
 Maybe, nothing.
+
+### API2
+
+```
+GET    /posts/:id/comments/:id
+```
+
+これは本当に不要 comment_id だけの指定で十分な気が

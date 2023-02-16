@@ -61,6 +61,40 @@ class TestGetPost:
         assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
+class TestGetCommentsByPost:
+    def test_comments_by_post_id(self, client, initial):
+        # create post
+        post_data = {"title": "new post", "content": "nah", "user_id": initial["user_id"]}
+        resp = client.post("/posts", json=post_data)
+        post_id = resp.json()["id"]
+
+        # create comment
+        comment_data = {
+            "comment": random_string(),
+            "user_id": initial["user_id"],
+            "post_id": post_id,
+        }
+        resp = client.post("/comments", json=comment_data)
+
+        comment_data = {
+            "comment": random_string(),
+            "user_id": initial["user_id"],
+            "post_id": post_id,
+        }
+        client.post("/comments", json=comment_data)
+
+        # get comment by post_id
+        resp = client.get(f"/posts/{post_id}/comments")
+        assert resp.status_code == status.HTTP_200_OK
+
+        resp_obj = resp.json()
+        assert len(resp_obj) == 2
+
+    def test_comments_by_post_id_which_does_not_exist(self, client, initial):
+        resp = client.get("/posts/123345/comments")
+        assert resp.status_code == status.HTTP_404_NOT_FOUND
+
+
 class TestPostPost:
     def test_create_post(self, client, initial):
         resp = client.post(

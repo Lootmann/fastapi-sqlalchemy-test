@@ -124,7 +124,7 @@ class TestGetCommentByUser:
         resp_obj = resp.json()
         assert len(resp_obj) == 3
 
-    def tet_get_comments_which_doesnt_exist_user(self, client):
+    def test_get_comments_which_doesnt_exist_user(self, client):
         resp = client.get("/users/123/comments")
         assert resp.status_code == status.HTTP_404_NOT_FOUND
 
