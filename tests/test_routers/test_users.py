@@ -128,6 +128,27 @@ class TestGetCommentByUser:
         resp = client.get("/users/123/comments")
         assert resp.status_code == status.HTTP_404_NOT_FOUND
 
+    def test_get_comment_by_user_id(self, client):
+        post_data = {"title": random_string(), "content": random_string(), "user_id": self.user.id}
+        resp = client.post("/posts", json=post_data)
+        post_id = resp.json()["id"]
+
+        comment_data = {"comment": "now testing...", "user_id": self.user.id, "post_id": post_id}
+        resp = client.post("/comments", json=comment_data)
+        comment_id = resp.json()["id"]
+
+        resp = client.get(f"/users/{self.user.id}/comments/{comment_id}")
+        assert resp.status_code == status.HTTP_200_OK
+        assert resp.json()["comment"] == "now testing..."
+
+        # wrong comment_id
+        resp = client.get(f"/users/{self.user.id}/comments/{comment_id + 1}")
+        assert resp.status_code == status.HTTP_404_NOT_FOUND
+
+        # wrong user_id
+        resp = client.get(f"/users/{self.user.id + 1}/comments/{comment_id}")
+        assert resp.status_code == status.HTTP_404_NOT_FOUND
+
 
 class TestUpdateUser:
     def test_update_user(self, client):
