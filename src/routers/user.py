@@ -3,6 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from src.apis import comment as comment_api
 from src.apis import user as user_api
 from src.db import get_db
 from src.schemas import comment as comment_schema
@@ -22,7 +23,7 @@ def create_user(user_body: user_schema.UserCreate, db: Session = Depends(get_db)
     return user_api.create_user(db, user_body)
 
 
-@router.put("/users/{user_id}", response_model=user_schema.UserCreateResponse, status_code=201)
+@router.patch("/users/{user_id}", response_model=user_schema.UserCreateResponse, status_code=201)
 def update_user(user_id: int, user_body: user_schema.UserCreate, db: Session = Depends(get_db)):
     user = user_api.find_user_by_id(db, user_id)
     if not user:
@@ -71,4 +72,12 @@ def get_all_comments_by_user(user_id: int, db: Session = Depends(get_db)):
 
 @router.get("/users/{user_id}/comments/{comment_id}")
 def get_comment_by_user(user_id: int, comment_id: int, db: Session = Depends(get_db)):
-    return {}
+    # TODO: validation user
+    comment = comment_api.find_comment_by_id(db, comment_id)
+    if not comment:
+        raise HTTPException(status_code=404, detail=f"Comment:{comment_id} Not Found")
+
+    if comment.user_id != user_id:
+        raise HTTPException(status_code=404, detail=f"User:{user_id} Not Found")
+
+    return comment

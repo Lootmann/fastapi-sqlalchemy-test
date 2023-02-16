@@ -128,6 +128,27 @@ class TestGetCommentByUser:
         resp = client.get("/users/123/comments")
         assert resp.status_code == status.HTTP_404_NOT_FOUND
 
+    def test_get_comment_by_user_id(self, client):
+        post_data = {"title": random_string(), "content": random_string(), "user_id": self.user.id}
+        resp = client.post("/posts", json=post_data)
+        post_id = resp.json()["id"]
+
+        comment_data = {"comment": "now testing...", "user_id": self.user.id, "post_id": post_id}
+        resp = client.post("/comments", json=comment_data)
+        comment_id = resp.json()["id"]
+
+        resp = client.get(f"/users/{self.user.id}/comments/{comment_id}")
+        assert resp.status_code == status.HTTP_200_OK
+        assert resp.json()["comment"] == "now testing..."
+
+        # wrong comment_id
+        resp = client.get(f"/users/{self.user.id}/comments/{comment_id + 1}")
+        assert resp.status_code == status.HTTP_404_NOT_FOUND
+
+        # wrong user_id
+        resp = client.get(f"/users/{self.user.id + 1}/comments/{comment_id}")
+        assert resp.status_code == status.HTTP_404_NOT_FOUND
+
 
 class TestUpdateUser:
     def test_update_user(self, client):
@@ -138,7 +159,7 @@ class TestUpdateUser:
         resp_obj = resp.json()
         assert resp_obj["name"] == username
 
-        resp = client.put(f"/users/{resp_obj['id']}", json={"name": "updated"})
+        resp = client.patch(f"/users/{resp_obj['id']}", json={"name": "updated"})
         assert resp.status_code == status.HTTP_201_CREATED
 
         updated_user = user_schema.User(**resp.json())
@@ -147,7 +168,7 @@ class TestUpdateUser:
         assert updated_user.name != username
 
     def test_update_user_which_doesnt_exists(self, client):
-        resp = client.put(f"/users/1", json={"name": "updated"})
+        resp = client.patch(f"/users/1", json={"name": "updated"})
         assert resp.status_code == status.HTTP_404_NOT_FOUND
 
 
