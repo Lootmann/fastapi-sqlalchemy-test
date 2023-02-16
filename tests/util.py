@@ -1,4 +1,4 @@
-from random import sample, randint
+from random import randint, sample
 from string import ascii_letters, digits, punctuation
 
 

@@ -3,9 +3,9 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.models.user import Base
 from src.db import get_db
 from src.main import app
+from src.models.user import Base
 
 TEST_DATABASE_URL = "sqlite:///:memory:"
 

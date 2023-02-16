@@ -5,9 +5,9 @@ from sqlalchemy.orm import Session
 
 from src.apis import user as user_api
 from src.db import get_db
-from src.schemas import user as user_schema
-from src.schemas import post as post_schema
 from src.schemas import comment as comment_schema
+from src.schemas import post as post_schema
+from src.schemas import user as user_schema
 
 router = APIRouter()
 

@@ -2,8 +2,12 @@ from typing import List
 
 from sqlalchemy.orm import Session
 
-from src.schemas import user as user_schema, post as post_schema, comment as comment_schema
-from src.models import user as user_model, post as post_model, comment as comment_model
+from src.models import comment as comment_model
+from src.models import post as post_model
+from src.models import user as user_model
+from src.schemas import comment as comment_schema
+from src.schemas import post as post_schema
+from src.schemas import user as user_schema
 
 
 def get_all_users(db: Session) -> List[user_model.User]:

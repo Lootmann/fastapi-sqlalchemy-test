@@ -1,8 +1,9 @@
 import pytest
 from fastapi import status
-from tests.init_client import test_client as client
-from src.schemas import user as user_schema
+
 from src.schemas import post as post_schema
+from src.schemas import user as user_schema
+from tests.init_client import test_client as client
 from tests.util import random_string
 
 

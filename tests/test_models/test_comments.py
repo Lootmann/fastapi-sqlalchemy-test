@@ -1,8 +1,7 @@
-from tests.init_client import test_client as client
-
-from src.models.user import User
-from src.models.post import Post
 from src.models.comment import Comment
+from src.models.post import Post
+from src.models.user import User
+from tests.init_client import test_client as client
 
 
 def test_user_model():
