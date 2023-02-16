@@ -31,9 +31,9 @@ REST な感じで
   - [x] `GET  /users/:id`
   - [x] `PUT  /users/:id`
   - [x] `DEL  /users/:id`
-  - [ ] `GET  /users/:id/posts`
-  - [ ] `GET  /users/:id/posts/:id`
-  - [ ] `GET  /users/:id/comments`
+  - [x] `GET  /users/:id/posts`
+  - [x] `GET  /users/:id/posts/:id`
+  - [x] `GET  /users/:id/comments`
   - [ ] `GET  /users/:id/comments/:id`
 
 - posts (Required: user_id)
@@ -53,3 +53,16 @@ REST な感じで
   - [x] `GET  /comments/:id`
   - [x] `PUT  /comments/:id`
   - [x] `DEL  /comments/:id`
+
+## Thinking 🤔
+
+```
+GET  /users/:id/posts
+GET  /users/:id/posts/:id
+GET  /users/:id/comments
+GET  /users/:id/comments/:id
+```
+
+when I get the response of /user/:id,
+I can get all posts and comments, so I wonder if this is really necessary.
+Maybe, nothing.
