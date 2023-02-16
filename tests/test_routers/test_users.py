@@ -159,7 +159,7 @@ class TestUpdateUser:
         resp_obj = resp.json()
         assert resp_obj["name"] == username
 
-        resp = client.put(f"/users/{resp_obj['id']}", json={"name": "updated"})
+        resp = client.patch(f"/users/{resp_obj['id']}", json={"name": "updated"})
         assert resp.status_code == status.HTTP_201_CREATED
 
         updated_user = user_schema.User(**resp.json())
@@ -168,7 +168,7 @@ class TestUpdateUser:
         assert updated_user.name != username
 
     def test_update_user_which_doesnt_exists(self, client):
-        resp = client.put(f"/users/1", json={"name": "updated"})
+        resp = client.patch(f"/users/1", json={"name": "updated"})
         assert resp.status_code == status.HTTP_404_NOT_FOUND
 
 
