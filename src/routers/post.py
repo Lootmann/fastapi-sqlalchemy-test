@@ -3,9 +3,11 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
+from src.apis import comment as comment_api
 from src.apis import post as post_api
 from src.apis import user as user_api
 from src.db import get_db
+from src.schemas import comment as comment_schema
 from src.schemas import post as post_schema
 
 router = APIRouter()
@@ -24,14 +26,12 @@ def get_post_by_id(post_id: int, db: Session = Depends(get_db)):
     return post
 
 
-@router.get("/posts/{post_id}/comments")
-def get_comments_by_post(post_id: int, db: Session = Depends(get_db)):
-    return {}
-
-
-@router.get("/posts/{post_id}/comments/{comment_id}")
-def get_comment_by_post(post_id: int, comment_id: int, db: Session = Depends(get_db)):
-    return {}
+@router.get("/posts/{post_id}/comments", response_model=List[comment_schema.Comment])
+def get_comments_by_post_id(post_id: int, db: Session = Depends(get_db)):
+    post = post_api.find_post_by_id(db, post_id)
+    if not post:
+        raise HTTPException(status_code=404, detail=f"Post:{post_id} Not Found")
+    return post.comments
 
 
 @router.post("/posts", response_model=post_schema.PostCreateResponse, status_code=201)
