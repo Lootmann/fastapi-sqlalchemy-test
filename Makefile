@@ -20,3 +20,8 @@ req:
 .PHONY: docs
 docs:
 	google-chrome http://127.0.0.1:8000/docs
+
+# git behavior
+.PHONY: pre
+pre:
+	pre-commit run --all-files
