@@ -26,43 +26,43 @@ REST な感じで
 
 - users
 
-  - [x] `GET  /users`
-  - [x] `POST /users`
-  - [x] `GET  /users/:id`
-  - [x] `PUT  /users/:id`
-  - [x] `DEL  /users/:id`
-  - [x] `GET  /users/:id/posts`
-  - [x] `GET  /users/:id/posts/:id`
-  - [x] `GET  /users/:id/comments`
-  - [ ] `GET  /users/:id/comments/:id`
+  - [x] `GET   /users`
+  - [x] `POST  /users`
+  - [x] `GET   /users/:id`
+  - [x] `PATCH /users/:id`
+  - [x] `DEL   /users/:id`
+  - [x] `GET   /users/:id/posts`
+  - [x] `GET   /users/:id/posts/:id`
+  - [x] `GET   /users/:id/comments`
+  - [x] `GET   /users/:id/comments/:id`
 
 - posts (Required: user_id)
 
-  - [x] `GET    /posts`
-  - [x] `POST   /posts`
-  - [x] `GET    /posts/:id`
-  - [x] `PATCH  /posts/:id`
-  - [x] `DEL    /posts/:id`
-  - [x] `GET    /posts/:id/comments`
+  - [x] `GET   /posts`
+  - [x] `POST  /posts`
+  - [x] `GET   /posts/:id`
+  - [x] `PATCH /posts/:id`
+  - [x] `DEL   /posts/:id`
+  - [x] `GET   /posts/:id/comments`
   - ~~[x] `GET    /posts/:id/comments/:id`~`
 
 - comments (Required: user_id, and post_id)
 
-  - [x] `GET  /comments`
-  - [x] `POST /comments`
-  - [x] `GET  /comments/:id`
-  - [x] `PUT  /comments/:id`
-  - [x] `DEL  /comments/:id`
+  - [x] `GET   /comments`
+  - [x] `POST  /comments`
+  - [x] `GET   /comments/:id`
+  - [x] `PATCH /comments/:id`
+  - [x] `DEL   /comments/:id`
 
 ## Thinking 🤔
 
 ### API1
 
 ```
-GET  /users/:id/posts
-GET  /users/:id/posts/:id
-GET  /users/:id/comments
-GET  /users/:id/comments/:id
+GET /users/:id/posts
+GET /users/:id/posts/:id
+GET /users/:id/comments
+GET /users/:id/comments/:id
 ```
 
 when I get the response of /user/:id,
@@ -72,7 +72,12 @@ Maybe, nothing.
 ### API2
 
 ```
-GET    /posts/:id/comments/:id
+GET /posts/:id/comments/:id
 ```
 
 これは本当に不要 comment_id だけの指定で十分な気が
+
+## Todo
+
+- Authentication
+  - Authentication -> sign_up/login -> get_current_user
