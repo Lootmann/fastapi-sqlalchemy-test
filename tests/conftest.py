@@ -31,5 +31,4 @@ def post_fixture(client):
             "user_id": user.id,
         },
     )
-    post = post_schema.PostCreateResponse(**resp.json())
-    return post
+    return post_schema.PostCreateResponse(**resp.json())

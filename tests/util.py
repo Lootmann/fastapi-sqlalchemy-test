@@ -14,7 +14,3 @@ def random_string(min_: int = 5, max_: int = 20) -> str:
     """
     s = ascii_letters + digits + punctuation
     return "".join(sample(s, randint(min_, max_)))
-
-
-def random_user_json() -> dict:
-    return {"name": random_string(), "password": random_string()}
