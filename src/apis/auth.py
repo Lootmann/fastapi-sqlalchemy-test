@@ -10,10 +10,20 @@ from src.apis import user as user_api
 from src.db import get_db
 from src.models import user as user_model
 from src.schemas import auth as auth_schema
+from src.schemas import user as user_schema
 from src.settings import Settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oath2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+credential = Settings()
+
+
+def get_hashed_password(plain_password: str) -> str:
+    return pwd_context.hash(plain_password)
+
+
+def verify_password(plain: str, hashed: str) -> bool:
+    return pwd_context.verify(plain, hashed)
 
 
 def get_current_user(
@@ -27,7 +37,7 @@ def get_current_user(
     )
 
     try:
-        payload = jwt.decode(token, Settings.secret_key, algorithms=[Settings.algorithm])
+        payload = jwt.decode(token, credential.secret_key, algorithms=[credential.algorithm])
         username: str = payload.get("sub", None)
 
         if username is None:
@@ -45,12 +55,10 @@ def get_current_user(
     return user
 
 
-def get_hashed_password(plain_password: str) -> str:
-    return pwd_context.hash(plain_password)
-
-
-def verify_password(plain: str, hashed: str) -> bool:
-    return pwd_context.verify(plain, hashed)
+def get_current_active_user(current_user: user_schema.User = Depends(get_current_user)):
+    # TODO: check active or not
+    # TODO: what is the definition of this 'active'?
+    return current_user
 
 
 def create_access_token(data: dict, expired_delta: timedelta | None = None):
@@ -59,7 +67,18 @@ def create_access_token(data: dict, expired_delta: timedelta | None = None):
     else:
         expire = datetime.utcnow() + timedelta(minutes=15)
 
-    data.updata({"exp": expire})
-    encoded_jwt = jwt.encode(data, Settings.secret_key, algorithm=Settings.algorithm)
+    data.update({"exp": expire})
+    encoded_jwt = jwt.encode(data, credential.secret_key, algorithm=credential.algorithm)
 
     return encoded_jwt
+
+
+def authenticate_user(db: Session, username: str, password: str):
+    user = user_api.find_user_by_name(db, username)
+    if not user:
+        return None
+
+    if not verify_password(password, user.password):
+        return None
+
+    return user
