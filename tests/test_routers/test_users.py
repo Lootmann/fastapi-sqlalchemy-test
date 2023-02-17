@@ -1,15 +1,14 @@
 import pytest
 from fastapi import status
 
-from src.schemas import post as post_schema
 from src.schemas import user as user_schema
 from tests.init_client import test_client as client
-from tests.util import random_string
+from tests.util import random_string, random_user_json
 
 
 def test_create_user(client):
-    username = random_string()
-    resp = client.post("/users", json={"name": username})
+    user_json = random_user_json()
+    resp = client.post("/users", json=user_json)
     assert resp.status_code == status.HTTP_200_OK
 
     resp_obj = resp.json()
@@ -19,13 +18,13 @@ def test_create_user(client):
     assert "comments" not in resp_obj
 
     user = user_schema.User(**resp_obj)
-    assert user.name == username
+    assert user.name == user_json["name"]
 
 
 class TestGetUser:
     def test_get_all_users(self, client):
         for _ in range(10):
-            client.post("/users", json={"name": random_string()})
+            client.post("/users", json=random_user_json())
 
         resp = client.get("/users")
         assert resp.status_code == status.HTTP_200_OK
@@ -34,8 +33,8 @@ class TestGetUser:
         assert len(resp_obj) == 10
 
     def test_get_user(self, client):
-        username = random_string()
-        resp = client.post("/users", json={"name": username})
+        user_json = random_user_json()
+        resp = client.post("/users", json=user_json)
         assert resp.status_code == status.HTTP_200_OK
 
         user_data = user_schema.User(**resp.json())
@@ -43,7 +42,7 @@ class TestGetUser:
         assert resp.status_code == status.HTTP_200_OK
 
         user = user_schema.User(**resp.json())
-        assert user.name == username
+        assert user.name == user_json["name"]
         assert user.posts == []
         assert user.comments == []
 
@@ -55,8 +54,8 @@ class TestGetUser:
 class TestGetPostByUser:
     @pytest.fixture(autouse=True)
     def initial(self, client):
-        self.username = random_string()
-        resp = client.post("/users", json={"name": self.username})
+        user_json = random_user_json()
+        resp = client.post("/users", json=user_json)
         self.user = user_schema.UserCreateResponse(**resp.json())
 
     def test_get_all_posts_by_user_id(self, client):
@@ -96,8 +95,9 @@ class TestGetPostByUser:
 class TestGetCommentByUser:
     @pytest.fixture(autouse=True)
     def initial(self, client):
-        self.username = random_string()
-        resp = client.post("/users", json={"name": self.username})
+        user_json = random_user_json()
+        self.username = user_json["name"]
+        resp = client.post("/users", json=user_json)
         self.user = user_schema.UserCreateResponse(**resp.json())
 
     def test_get_comments_by_user_id(self, client):
@@ -152,12 +152,12 @@ class TestGetCommentByUser:
 
 class TestUpdateUser:
     def test_update_user(self, client):
-        username = random_string()
-        resp = client.post("/users", json={"name": username})
+        user_json = random_user_json()
+        resp = client.post("/users", json=user_json)
         assert resp.status_code == status.HTTP_200_OK
 
         resp_obj = resp.json()
-        assert resp_obj["name"] == username
+        assert resp_obj["name"] == user_json["name"]
 
         resp = client.patch(f"/users/{resp_obj['id']}", json={"name": "updated"})
         assert resp.status_code == status.HTTP_201_CREATED
@@ -165,7 +165,7 @@ class TestUpdateUser:
         updated_user = user_schema.User(**resp.json())
         assert updated_user.id == resp_obj["id"]
         assert updated_user.name == "updated"
-        assert updated_user.name != username
+        assert updated_user.name != user_json["name"]
 
     def test_update_user_which_doesnt_exists(self, client):
         resp = client.patch(f"/users/1", json={"name": "updated"})
@@ -174,7 +174,8 @@ class TestUpdateUser:
 
 class TestDeleteUser:
     def test_delete(self, client):
-        create_resp = client.post("/users", json={"name": random_string()})
+        user_json = random_user_json()
+        create_resp = client.post("/users", json=user_json)
         assert create_resp.status_code == status.HTTP_200_OK
 
         resp = client.get("/users")

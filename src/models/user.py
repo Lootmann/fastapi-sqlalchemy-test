@@ -16,6 +16,7 @@ class User(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
+    password: Mapped[str]
     posts: Mapped[List["Post"]] = relationship("Post", backref="user")
 
     def __repr__(self) -> str:

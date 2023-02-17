@@ -3,7 +3,7 @@ from fastapi import status
 
 from src.schemas import post as post_schema
 from tests.init_client import test_client as client
-from tests.util import random_string
+from tests.util import random_string, random_user_json
 
 
 @pytest.fixture(autouse=True, scope="function")
@@ -11,8 +11,8 @@ def initial(client):
     """
     create user and post and return these params
     """
-    username = random_string()
-    resp = client.post("/users", json={"name": username})
+    user_json = random_user_json()
+    resp = client.post("/users", json=user_json)
     user_id = resp.json()["id"]
 
     title = random_string()
@@ -22,7 +22,7 @@ def initial(client):
     post_id = resp.json()["id"]
 
     return {
-        "username": username,
+        "username": user_json["name"],
         "title": title,
         "content": content,
         "user_id": user_id,

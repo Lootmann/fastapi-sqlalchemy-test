@@ -4,7 +4,7 @@ from fastapi import status
 from src.schemas import post as post_schema
 from src.schemas import user as user_schema
 from tests.init_client import test_client as client
-from tests.util import random_string
+from tests.util import random_string, random_user_json
 
 
 @pytest.fixture(autouse=True, scope="function")
@@ -12,13 +12,13 @@ def initial(client):
     """
     create user and post and return these params
     """
-    username = random_string()
-    resp = client.post("/users", json={"name": username})
+    user_json = random_user_json()
+    resp = client.post("/users", json=user_json)
     resp_obj = resp.json()
     user_id = resp_obj["id"]
 
     return {
-        "username": username,
+        "username": user_json["name"],
         "user_id": user_id,
         "user": resp_obj,
     }
@@ -139,8 +139,9 @@ class TestPostPost:
 class TestPatchPost:
     @pytest.fixture(autouse=True)
     def initial(self, client):
-        self.username = random_string()
-        resp = client.post("/users", json={"name": self.username})
+        user_json = random_user_json()
+        self.username = user_json["name"]
+        resp = client.post("/users", json=user_json)
         self.user = user_schema.User(**resp.json())
 
         self.title = random_string()
@@ -189,7 +190,7 @@ class TestPatchPost:
         assert resp.status_code == status.HTTP_404_NOT_FOUND
 
     def test_try_update_post_by_different_post_owner(self, client):
-        resp = client.post("/users", json={"name": "malicious-user001"})
+        resp = client.post("/users", json={"name": "malicious-user001", "password": "iL0V3Earth"})
         bot = user_schema.User(**resp.json())
 
         attack_data = {
