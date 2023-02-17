@@ -24,7 +24,7 @@ def create_user(user_body: user_schema.UserCreate, db: Session = Depends(get_db)
 
 
 @router.patch("/users/{user_id}", response_model=user_schema.UserCreateResponse, status_code=201)
-def update_user(user_id: int, user_body: user_schema.UserCreate, db: Session = Depends(get_db)):
+def update_user(user_id: int, user_body: user_schema.UserUpdate, db: Session = Depends(get_db)):
     user = user_api.find_user_by_id(db, user_id)
     if not user:
         raise HTTPException(status_code=404, detail=f"User:{user_id} Not Found")
