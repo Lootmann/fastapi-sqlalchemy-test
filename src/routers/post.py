@@ -3,12 +3,13 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
-from src.apis import comment as comment_api
+from src.apis import auth as auth_api
 from src.apis import post as post_api
 from src.apis import user as user_api
 from src.db import get_db
 from src.schemas import comment as comment_schema
 from src.schemas import post as post_schema
+from src.schemas import user as user_schema
 
 router = APIRouter()
 
@@ -35,8 +36,12 @@ def get_comments_by_post_id(post_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/posts", response_model=post_schema.PostCreateResponse, status_code=201)
-def create_post(post_body: post_schema.PostCreate, db: Session = Depends(get_db)):
-    user = user_api.find_user_by_id(db, post_body.user_id)
+def create_post(
+    post_body: post_schema.PostCreate,
+    db: Session = Depends(get_db),
+    current_user: user_schema.User = Depends(auth_api.get_current_active_user),
+):
+    user = user_api.find_user_by_id(db, current_user.id)
     if not user:
         raise HTTPException(status_code=404, detail=f"User:{post_body.user_id} Not Found")
     return post_api.create_post(db, user, post_body)
