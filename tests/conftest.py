@@ -7,39 +7,39 @@ from tests.init_client import test_client as client
 from tests.util import random_string
 
 
-@pytest.fixture
-def user_fixture(client):
-    username = random_string()
-    password = random_string()
-    resp = client.post("/users", json={"name": username, "password": password})
-
+def login_and_create_token(client, username: str, password: str) -> auth_schema.Token:
     token_resp = client.post(
         "/token",
         data={"username": username, "password": password},
         headers={"content-type": "application/x-www-form-urlencoded"},
     )
-    token_json = token_resp.json()
-    token = auth_schema.Token(**token_json)
+    token = auth_schema.Token(**token_resp.json())
+    return {"Authorization": "Bearer {}".format(token.access_token)}
 
-    return user_schema.UserCreateResponse(**resp.json())
+
+@pytest.fixture
+def user_fixture(client) -> tuple:
+    username = random_string()
+    password = random_string()
+
+    resp = client.post("/users", json={"name": username, "password": password})
+    headers = login_and_create_token(client, username, password)
+
+    return (user_schema.UserCreateResponse(**resp.json()), headers)
 
 
 @pytest.fixture
 def post_fixture(client):
     username = random_string()
     password = random_string()
+
     resp = client.post(
         "/users",
         json={"name": username, "password": password},
     )
     user = user_schema.UserCreateResponse(**resp.json())
 
-    login_resp = client.post(
-        "/token",
-        data={"username": username, "password": password},
-        headers={"content-type": "application/x-www-form-urlencoded"},
-    )
-
+    headers = login_and_create_token(client, username, password)
     resp = client.post(
         "/posts",
         json={
@@ -47,5 +47,7 @@ def post_fixture(client):
             "content": random_string(),
             "user_id": user.id,
         },
+        headers=headers,
     )
-    return post_schema.PostCreateResponse(**resp.json())
+
+    return post_schema.PostCreateResponse(**resp.json()), headers
