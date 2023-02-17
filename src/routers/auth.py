@@ -7,9 +7,20 @@ from sqlalchemy.orm import Session
 from src.apis import auth as auth_api
 from src.db import get_db
 from src.schemas import auth as auth_schema
+from src.schemas import user as user_schema
 from src.settings import Settings
 
+credential = Settings()
+
 router = APIRouter()
+
+
+@router.get("/auth")
+def auth_test(
+    db: Session = Depends(get_db),
+    current_user: user_schema.User = Depends(auth_api.get_current_active_user),
+):
+    return {"current login user": current_user}
 
 
 @router.post("/token", response_model=auth_schema.Token)
@@ -23,7 +34,7 @@ def login(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = 
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    access_token_expires = timedelta(minutes=Settings.access_token_expire_minutes)
+    access_token_expires = timedelta(minutes=credential.access_token_expire_minutes)
 
     data = {"sub": user.name}
     access_token = auth_api.create_access_token(data, access_token_expires)

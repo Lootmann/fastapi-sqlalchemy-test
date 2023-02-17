@@ -14,6 +14,7 @@ def get_all_users(db: Session) -> List[user_model.User]:
 
 
 def create_user(db: Session, user_body: user_schema.UserCreate) -> user_model.User:
+    # TODO: validation - DO NOT allow duplicate username
     user = user_model.User(**user_body.dict())
     user.password = auth_api.get_hashed_password(user.password)
 
