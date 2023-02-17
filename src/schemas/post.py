@@ -19,6 +19,7 @@ class PostCreate(PostBase):
 
 class PostCreateResponse(PostBase):
     id: int
+    user_id: int
 
 
 class Post(PostBase):
