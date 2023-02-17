@@ -2,11 +2,10 @@ from typing import List
 
 from sqlalchemy.orm import Session
 
+from src.apis import auth as auth_api
 from src.models import comment as comment_model
 from src.models import post as post_model
 from src.models import user as user_model
-from src.schemas import comment as comment_schema
-from src.schemas import post as post_schema
 from src.schemas import user as user_schema
 
 
@@ -16,6 +15,7 @@ def get_all_users(db: Session) -> List[user_model.User]:
 
 def create_user(db: Session, user_body: user_schema.UserCreate) -> user_model.User:
     user = user_model.User(**user_body.dict())
+    user.password = auth_api.get_hashed_password(user.password)
 
     db.add(user)
     db.commit()
@@ -26,6 +26,10 @@ def create_user(db: Session, user_body: user_schema.UserCreate) -> user_model.Us
 
 def find_user_by_id(db: Session, user_id: int) -> user_model.User | None:
     return db.get(user_model.User, user_id)
+
+
+def find_user_by_name(db: Session, user_name: str) -> user_model.User | None:
+    return db.query(user_model.User).filter(user_model.User.name == user_name).first()
 
 
 def find_posts_by_user_id(db: Session, user_id: int) -> List[post_model.Post]:
@@ -47,7 +51,7 @@ def find_comments_by_user_id(db: Session, user_id: int) -> List[comment_model.Co
 
 
 def update_user(
-    db: Session, updated: user_schema.User, user_body: user_schema.UserCreate
+    db: Session, updated: user_schema.User, user_body: user_schema.UserUpdate
 ) -> user_model.User:
     user = user_model.User(**user_body.dict())
     updated.name = user.name
