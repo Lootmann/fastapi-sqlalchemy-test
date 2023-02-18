@@ -4,7 +4,7 @@ from src.schemas import auth as auth_schema
 from src.schemas import post as post_schema
 from src.schemas import user as user_schema
 from tests.init_client import test_client as client
-from tests.util import random_string
+from tests.util import login_and_create_token, random_string
 
 
 class TestGetPost:
@@ -225,3 +225,13 @@ class TestDeletePost:
 
         resp = client.delete(f"/posts/{post.id+ 10}", headers=headers)
         assert resp.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_delete_post_which_wrong_login_user(self, client, post_fixture):
+        post: post_schema.PostCreateResponse = post_fixture[0]
+
+        username, password = random_string(), random_string()
+        resp = client.post("/users", json={"name": username, "password": password})
+        different_header = login_and_create_token(client, username, password)
+
+        resp = client.delete(f"/posts/{post.id}", headers=different_header)
+        assert resp.status_code == status.HTTP_401_UNAUTHORIZED
