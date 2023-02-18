@@ -154,6 +154,31 @@ class TestUpdateComment:
         resp = client.patch("/comments/123", json=comment_data, headers=headers)
         assert resp.status_code == status.HTTP_404_NOT_FOUND
 
+    def test_update_comment_when_different_owner_try_to_update(self, client, post_fixture):
+        post: post_schema.PostCreateResponse = post_fixture[0]
+        headers = post_fixture[1]
+
+        # create comment with current user
+        comment_data = {
+            "comment": "this is a comment",
+            "post_id": post.id,
+        }
+        resp = client.post("/comments", json=comment_data, headers=headers)
+        assert resp.status_code == status.HTTP_201_CREATED
+        comment_id = resp.json()["id"]
+
+        # create difference user
+        username, password = random_string(), random_string()
+        client.post("/users", json={"name": username, "password": password})
+        headers = login_and_create_token(client, username, password)
+
+        update_comment_data = {
+            "comment": "update",
+            "post_id": post.id,
+        }
+        resp = client.patch(f"/comments/{comment_id}", json=update_comment_data, headers=headers)
+        assert resp.status_code == status.HTTP_401_UNAUTHORIZED
+
 
 class TestDeleteComment:
     def test_delete_comment(self, client, post_fixture):
