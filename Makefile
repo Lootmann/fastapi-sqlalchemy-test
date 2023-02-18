@@ -1,3 +1,6 @@
+#
+# $(OPTION) python3 -m pytest ./tests/test_routers/test_comments.py -svv
+#
 OPTION = PYTHONDONTWRITEBYTECODE=1
 
 run:
@@ -5,7 +8,6 @@ run:
 
 .PHONY: test
 test:
-	#$(OPTION) python3 -m pytest ./tests/test_routers/test_comments.py -svv
 	$(OPTION) python3 -m pytest -svv
 
 .PHONY: cov
