@@ -94,3 +94,4 @@ Maybe, nothing.
 - Login User が自動で取れる前提だと Routing, Schemas 色々修正点が出てくる
 - もっとよい書き方あるのでは client を wrapper するとか
 - tuple で fixture を渡すというのはいかがなものか
+- test 遅すぎ問題 次作るときは必ず `AsyncSession` で速度上げる 1/3くらいには早くなるとかならないとか
