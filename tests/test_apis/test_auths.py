@@ -2,13 +2,12 @@ from fastapi import Depends, status
 from sqlalchemy.orm import Session
 
 from src.apis import auth as auth_api
-from src.db import get_db
 from src.schemas import user as user_schema
 from tests.init_client import test_client as client
 from tests.util import random_string
 
 
-def test_login(client):
+def test_validation_jwt_token(client):
     # create user
     username = random_string()
     password = random_string()
@@ -57,7 +56,7 @@ def test_login(client):
     username, password = random_string(), random_string()
     client.post("/users", json={"name": username, "password": password})
 
-    # login with wrong username and password
+    # login with
     login_resp = client.post(
         "/token",
         data={"username": username, "password": password},
