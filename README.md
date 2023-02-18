@@ -79,5 +79,23 @@ GET /posts/:id/comments/:id
 
 ## Todo
 
-- Authentication
-  - Authentication -> sign_up/login -> get_current_user
+- [x] Authentication -> sign_up/login -> get_current_user
+
+- [ ] Authentication with JWT の実装 OK
+
+  - Routing をとりあえず全部書き直し(Depends get_active_user でログイン確認)
+  - テスト全部書き直し(headers={Authentication: Bearer ...})
+  - もっとよい書き方あるのでは client を wrapper するとか
+  - tuple で fixture を渡すというのはいかがなものか
+
+  - [x] Authentication post
+
+    - [x] Router
+    - [x] Test
+    - [x] Schema
+
+  - [ ] Authentication comment
+
+    - [ ] Router
+    - [ ] Test
+    - [ ] Schema
