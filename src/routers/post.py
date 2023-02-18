@@ -17,7 +17,7 @@ router = APIRouter()
 @router.get("/posts", response_model=List[post_schema.Post])
 def get_all_posts(
     db: Session = Depends(get_db),
-    current_user: user_schema.User = Depends(auth_api.get_current_active_user),
+    _: user_schema.User = Depends(auth_api.get_current_active_user),
 ):
     return post_api.get_all_posts(db)
 
@@ -26,7 +26,7 @@ def get_all_posts(
 def get_post_by_id(
     post_id: int,
     db: Session = Depends(get_db),
-    current_user: user_schema.User = Depends(auth_api.get_current_active_user),
+    _: user_schema.User = Depends(auth_api.get_current_active_user),
 ):
     post = post_api.find_post_by_id(db, post_id)
     if not post:
@@ -38,7 +38,7 @@ def get_post_by_id(
 def get_comments_by_post_id(
     post_id: int,
     db: Session = Depends(get_db),
-    current_user: user_schema.User = Depends(auth_api.get_current_active_user),
+    _: user_schema.User = Depends(auth_api.get_current_active_user),
 ):
     post = post_api.find_post_by_id(db, post_id)
     if not post:
@@ -91,6 +91,6 @@ def delete_post(
         raise HTTPException(status_code=404, detail=f"Post:{post_id} Not Found")
 
     if current_user.id != post.user_id:
-        raise HTTPException(status_code=404, detail=f"Not Authenticated")
+        raise HTTPException(status_code=401, detail=f"Not Authenticated")
 
     return post_api.delete_post(db, post)
