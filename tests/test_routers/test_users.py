@@ -2,7 +2,7 @@ from fastapi import status
 
 from src.schemas import user as user_schema
 from tests.init_client import test_client as client
-from tests.util import random_string
+from tests.util import login_and_create_token, random_string
 
 
 class TestPostUser:
@@ -24,15 +24,18 @@ class TestPostUser:
 
 
 class TestGetUser:
-    def test_get_all_users(self, client):
+    def test_get_all_users(self, client, user_fixture):
+        headers = user_fixture[1]
         for _ in range(10):
-            client.post("/users", json={"name": random_string(), "password": random_string()})
+            resp = client.post(
+                "/users", json={"name": random_string(), "password": random_string()}
+            )
 
-        resp = client.get("/users")
+        resp = client.get("/users", headers=headers)
         assert resp.status_code == status.HTTP_200_OK
 
         resp_obj = resp.json()
-        assert len(resp_obj) == 10
+        assert len(resp_obj) == 10 + 1
 
     def test_get_user(self, client, user_fixture):
         user: user_schema.UserCreateResponse = user_fixture[0]
@@ -188,9 +191,9 @@ class TestDeleteUser:
         resp = client.delete(f"/users/{user.id}", headers=headers)
         assert resp.status_code == status.HTTP_200_OK
 
+        # lost token, login info
         resp = client.get("/users", headers=headers)
-        assert resp.status_code == status.HTTP_200_OK
-        assert len(resp.json()) == 0
+        assert resp.status_code == status.HTTP_401_UNAUTHORIZED
 
     def test_delete_which_user_doesnt_exist(self, client, user_fixture):
         user: user_schema.UserCreateResponse = user_fixture[0]
