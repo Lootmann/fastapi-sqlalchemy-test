@@ -15,12 +15,19 @@ router = APIRouter()
 
 
 @router.get("/posts", response_model=List[post_schema.Post])
-def get_all_posts(db: Session = Depends(get_db)):
+def get_all_posts(
+    db: Session = Depends(get_db),
+    current_user: user_schema.User = Depends(auth_api.get_current_active_user),
+):
     return post_api.get_all_posts(db)
 
 
 @router.get("/posts/{post_id}", response_model=post_schema.Post)
-def get_post_by_id(post_id: int, db: Session = Depends(get_db)):
+def get_post_by_id(
+    post_id: int,
+    db: Session = Depends(get_db),
+    current_user: user_schema.User = Depends(auth_api.get_current_active_user),
+):
     post = post_api.find_post_by_id(db, post_id)
     if not post:
         raise HTTPException(status_code=404, detail=f"Post:{post_id} Not Found")
@@ -28,7 +35,11 @@ def get_post_by_id(post_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/posts/{post_id}/comments", response_model=List[comment_schema.Comment])
-def get_comments_by_post_id(post_id: int, db: Session = Depends(get_db)):
+def get_comments_by_post_id(
+    post_id: int,
+    db: Session = Depends(get_db),
+    current_user: user_schema.User = Depends(auth_api.get_current_active_user),
+):
     post = post_api.find_post_by_id(db, post_id)
     if not post:
         raise HTTPException(status_code=404, detail=f"Post:{post_id} Not Found")
@@ -42,8 +53,6 @@ def create_post(
     current_user: user_schema.User = Depends(auth_api.get_current_active_user),
 ):
     user = user_api.find_user_by_id(db, current_user.id)
-    if not user:
-        raise HTTPException(status_code=404, detail=f"User:{post_body.user_id} Not Found")
     return post_api.create_post(db, user, post_body)
 
 
@@ -57,28 +66,31 @@ def update_post(
     post_id: int,
     post_body: post_schema.PostCreate,
     db: Session = Depends(get_db),
+    current_user: user_schema.User = Depends(auth_api.get_current_active_user),
 ):
-    # TODO: get current user
-    user = user_api.find_user_by_id(db, post_body.user_id)
-    if not user:
-        raise HTTPException(status_code=404, detail=f"User:{post_body.user_id} Not Found")
-
     post: post_schema.Post = post_api.find_post_by_id(db, post_id)
 
     if not post:
         response.status_code = status.HTTP_201_CREATED
         raise HTTPException(status_code=404, detail=f"Post:{post_id} Not Found")
 
-    if post.user_id != post_body.user_id:
-        raise HTTPException(status_code=404, detail=f"Post:{post_id} Not Found")
+    if post.user_id != current_user.id:
+        raise HTTPException(status_code=401, detail=f"Not Authenticated")
 
     return post_api.update_post(db, post, post_body)
 
 
 @router.delete("/posts/{post_id}", response_model=None, status_code=status.HTTP_204_NO_CONTENT)
-def delete_post(post_id: int, db: Session = Depends(get_db)):
-    # TODO: get current user
+def delete_post(
+    post_id: int,
+    db: Session = Depends(get_db),
+    current_user: user_schema.User = Depends(auth_api.get_current_active_user),
+):
     post = post_api.find_post_by_id(db, post_id)
     if not post:
         raise HTTPException(status_code=404, detail=f"Post:{post_id} Not Found")
+
+    if current_user.id != post.user_id:
+        raise HTTPException(status_code=404, detail=f"Not Authenticated")
+
     return post_api.delete_post(db, post)
