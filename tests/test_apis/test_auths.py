@@ -1,5 +1,8 @@
-from fastapi import status
+from fastapi import Depends, status
+from sqlalchemy.orm import Session
 
+from src.apis import auth as auth_api
+from src.db import get_db
 from src.schemas import user as user_schema
 from tests.init_client import test_client as client
 from tests.util import random_string
@@ -51,12 +54,37 @@ def test_login(client):
 
 def test_login(client):
     # create user
-    client.post("/users", json={"name": "hoge", "password": "moge"})
+    username, password = random_string(), random_string()
+    client.post("/users", json={"name": username, "password": password})
 
-    # login
+    # login with wrong username and password
     login_resp = client.post(
         "/token",
-        data={"username": random_string(), "password": random_string()},
+        data={"username": username, "password": password},
+        headers={"content-type": "application/x-www-form-urlencoded"},
+    )
+    assert login_resp.status_code == status.HTTP_200_OK
+
+    # login with wrong username and password
+    login_resp = client.post(
+        "/token",
+        data={"username": "hoge", "password": "hoge"},
+        headers={"content-type": "application/x-www-form-urlencoded"},
+    )
+    assert login_resp.status_code == status.HTTP_404_NOT_FOUND
+
+    # login with wrong username
+    login_resp = client.post(
+        "/token",
+        data={"username": username, "password": "hoge"},
+        headers={"content-type": "application/x-www-form-urlencoded"},
+    )
+    assert login_resp.status_code == status.HTTP_404_NOT_FOUND
+
+    # login wigh wrong password
+    login_resp = client.post(
+        "/token",
+        data={"username": "hoge", "password": password},
         headers={"content-type": "application/x-www-form-urlencoded"},
     )
     assert login_resp.status_code == status.HTTP_404_NOT_FOUND
