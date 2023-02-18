@@ -3,6 +3,7 @@ from fastapi import status
 from src.schemas import comment as comment_schema
 from src.schemas import post as post_schema
 from tests.init_client import test_client as client
+from tests.util import login_and_create_token, random_string
 
 
 class TestGetComment:
@@ -195,3 +196,24 @@ class TestDeleteComment:
         comment_id = resp.json()["id"]
         resp = client.delete(f"/comments/{comment_id + 1}", headers=headers)
         assert resp.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_delete_comment_with_different_owner(self, client, post_fixture):
+        post: post_schema.PostCreateResponse = post_fixture[0]
+        headers = post_fixture[1]
+
+        # create comment with current user
+        comment_data = {
+            "comment": "this is a comment",
+            "post_id": post.id,
+        }
+        resp = client.post("/comments", json=comment_data, headers=headers)
+        assert resp.status_code == status.HTTP_201_CREATED
+        comment_id = resp.json()["id"]
+
+        # create difference user
+        username, password = random_string(), random_string()
+        client.post("/users", json={"name": username, "password": password})
+        headers = login_and_create_token(client, username, password)
+
+        resp = client.delete(f"/comments/{comment_id}", headers=headers)
+        assert resp.status_code == status.HTTP_401_UNAUTHORIZED
