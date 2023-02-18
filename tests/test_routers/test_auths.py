@@ -36,7 +36,10 @@ def test_login(client):
     assert resp.status_code == status.HTTP_201_CREATED
 
     # test get post
-    resp = client.get(f"/users/{user.id}")
+    resp = client.get(
+        f"/users/{user.id}",
+        headers={"Authorization": "Bearer {}".format(resp_json["access_token"])},
+    )
     assert resp.status_code == status.HTTP_200_OK
 
     user = user_schema.User(**resp.json())
@@ -44,3 +47,16 @@ def test_login(client):
     assert len(user.posts) == 1
     assert user.posts[0].title == "hoge"
     assert user.posts[0].content == "hage"
+
+
+def test_login(client):
+    # create user
+    client.post("/users", json={"name": "hoge", "password": "moge"})
+
+    # login
+    login_resp = client.post(
+        "/token",
+        data={"username": random_string(), "password": random_string()},
+        headers={"content-type": "application/x-www-form-urlencoded"},
+    )
+    assert login_resp.status_code == status.HTTP_404_NOT_FOUND

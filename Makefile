@@ -1,17 +1,28 @@
+OPTION = PYTHONDONTWRITEBYTECODE=1
+
 run:
-	PYTHONDONTWRITEBYTECODE=1 python3 -m uvicorn src.main:app --reload --port 8000
+	$(OPTION) python3 -m uvicorn src.main:app --reload --port 8000
 
 .PHONY: test
 test:
-	PYTHONDONTWRITEBYTECODE=1 python3 -m pytest ./tests/test_routers/test_posts.py -svv
+	#$(OPTION) python3 -m pytest ./tests/test_routers/test_comments.py -svv
+	$(OPTION) python3 -m pytest -svv
 
 .PHONY: cov
 cov:
-	PYTHONDONTWRITEBYTECODE=1 python3 -m pytest --cov --cov-report=html
+	$(OPTION) python3 -m pytest --cov --cov-report=html
+
+.PHONY: profile
+profile:
+	$(OPTION) python3 -m pytest --profile-svg
+
+.PHONY: measure
+measure:
+	$(OPTION) python3 -m pytest --durations=0 -vv > ./tmp/pytest-durations.log
 
 .PHONY: migrate
 migrate:
-	PYTHONDONTWRITEBYTECODE=1 python3 -m src.migrate_db
+	$(OPTION) python3 -m src.migrate_db
 
 .PHONY: req
 req:

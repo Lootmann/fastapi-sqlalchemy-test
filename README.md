@@ -69,33 +69,28 @@ when I get the response of /user/:id,
 I can get all posts and comments, so I wonder if this is really necessary.
 Maybe, nothing.
 
-### API2
-
-```
-GET /posts/:id/comments/:id
-```
-
-これは本当に不要 comment_id だけの指定で十分な気が
-
 ## Todo
 
 - [x] Authentication -> sign_up/login -> get_current_user
 
-- [ ] Authentication with JWT の実装 OK
+- [x] Authentication with JWT の実装
 
-  - Routing をとりあえず全部書き直し(Depends get_active_user でログイン確認)
-  - テスト全部書き直し(headers={Authentication: Bearer ...})
-  - もっとよい書き方あるのでは client を wrapper するとか
-  - tuple で fixture を渡すというのはいかがなものか
-
+  - [x] Routing をとりあえず全部書き直し(Depends get_active_user でログイン確認)
+  - [x] テスト全部書き直し(headers={Authentication: Bearer ...})
   - [x] Authentication post
 
     - [x] Router
     - [x] Test
     - [x] Schema
 
-  - [ ] Authentication comment
+  - [x] Authentication comment
 
-    - [ ] Router
-    - [ ] Test
-    - [ ] Schema
+    - [x] Router
+    - [x] Test
+    - [x] Schema
+
+## Next Todo
+
+- Login User が自動で取れる前提だと Routing, Schemas 色々修正点が出てくる
+- もっとよい書き方あるのでは client を wrapper するとか
+- tuple で fixture を渡すというのはいかがなものか
