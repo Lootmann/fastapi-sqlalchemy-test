@@ -25,29 +25,30 @@ def user_fixture(client) -> tuple:
     resp = client.post("/users", json={"name": username, "password": password})
     headers = login_and_create_token(client, username, password)
 
+    # FIXME: HOW beautify is
     return (user_schema.UserCreateResponse(**resp.json()), headers)
 
 
 @pytest.fixture
 def post_fixture(client):
-    username = random_string()
-    password = random_string()
+    # create user
+    username, password = random_string(), random_string()
 
-    resp = client.post(
+    client.post(
         "/users",
         json={"name": username, "password": password},
     )
-    user = user_schema.UserCreateResponse(**resp.json())
 
+    # create token
     headers = login_and_create_token(client, username, password)
     resp = client.post(
         "/posts",
         json={
             "title": random_string(),
             "content": random_string(),
-            "user_id": user.id,
         },
         headers=headers,
     )
 
+    # FIXME: HOW beautify is
     return post_schema.PostCreateResponse(**resp.json()), headers
