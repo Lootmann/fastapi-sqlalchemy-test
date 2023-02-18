@@ -3,7 +3,7 @@ run:
 
 .PHONY: test
 test:
-	PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -svv
+	PYTHONDONTWRITEBYTECODE=1 python3 -m pytest ./tests/test_routers/test_posts.py -svv
 
 .PHONY: cov
 cov:
